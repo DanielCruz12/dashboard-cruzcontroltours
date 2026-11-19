@@ -39,7 +39,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar>
-            <AvatarImage src="/logo.png" />
+            <AvatarImage src="/logocruztours.png" />
             <AvatarFallback>{"U"}</AvatarFallback>
           </Avatar>
         </Button>
@@ -48,10 +48,10 @@ export function UserNav() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <span className="truncate font-semibold">
-              {user?.name || "Administrador Fedepatel"}
+              {user?.name || "Administrador Cruz Control Tours"}
             </span>
             <span className="truncate text-xs">
-              {user?.email || "fesapsv@yahoo.com"}
+              {user?.email || "cruzcontroltours@gmail.com"}
             </span>
           </div>
         </DropdownMenuLabel>

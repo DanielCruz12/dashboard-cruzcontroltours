@@ -1,30 +1,58 @@
-export type Product = {
-  photo_url: string;
-  name: string;
-  description: string;
-  created_at: string;
-  price: number;
-  id: number;
-  category: string;
-  updated_at: string;
-};
-
-//Info: The following data is used for the sidebar navigation and Cmd K bar.
 export const navItems = [
   {
-    title: "Eventos",
-    url: "/panel/eventos",
-    icon: "dashboard",
+    title: "Clientes",
+    url: "/panel/clientes",
+    icon: "user",
     isActive: true,
-    shortcut: ["d", "d"],
-    items: [], // Empty array as there are no child items for Dashboard
+    shortcut: ["c", "c"],
+    items: [],
   },
   {
-    title: "Noticias",
-    url: "/panel/noticias",
+    title: "Tours",
+    url: "/panel/tours",
     icon: "product",
-    shortcut: ["p", "p"],
     isActive: false,
-    items: [], // No child items
+    shortcut: ["t", "t"],
+    items: [],
+  },
+  {
+    title: "Categorías",
+    url: "/panel/categorias",
+    icon: "kanban",
+    isActive: false,
+    shortcut: ["c", "a"],
+    items: [],
+  },
+  {
+    title: "Protocolos",
+    url: "/panel/protocolos",
+    icon: "page",
+    isActive: false,
+    shortcut: ["p", "p"],
+    items: [],
+  },
+  {
+    title: "Reservas",
+    url: "/panel/reservas",
+    icon: "billing",
+    isActive: false,
+    shortcut: ["r", "e"],
+    items: [],
+  },
+  {
+    title: "Reseñas",
+    url: "/panel/resenas",
+    icon: "post",
+    isActive: false,
+    shortcut: ["r", "s"],
+    items: [],
+  },
+  {
+    title: "Preguntas",
+    url: "/panel/faqs",
+    icon: "help",
+    isActive: false,
+    shortcut: ["f", "f"],
+    items: [],
   },
 ];

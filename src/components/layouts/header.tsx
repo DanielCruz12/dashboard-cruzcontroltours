@@ -11,6 +11,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { UserNav } from "./user-nav";
+import ThemeToggle from "./ThemeToggle/theme-toggle";
 
 export default function Header() {
   const pathname = usePathname();
@@ -36,7 +37,7 @@ export default function Header() {
                     {index > 0 && <BreadcrumbSeparator />}
                     <BreadcrumbItem>
                       {isLast ? (
-                        <span className="text-gray-500">
+                        <span className="text-muted-foreground">
                           {decodeURIComponent(segment)}
                         </span>
                       ) : (
@@ -52,7 +53,8 @@ export default function Header() {
           </Breadcrumb>
         )}
       </div>
-      <div className="px-4">
+      <div className="flex items-center gap-2 px-4">
+        <ThemeToggle />
         <UserNav />
       </div>
     </header>

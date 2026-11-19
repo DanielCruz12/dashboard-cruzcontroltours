@@ -1,10 +1,10 @@
 import AppSidebar from "@/components/layouts/app-sidebar";
 import Header from "@/components/layouts/header";
+import Providers from "@/components/providers";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Panel de administración",
@@ -30,8 +30,7 @@ export default async function DashboardLayout({
       <AppSidebar />
       <SidebarInset>
         <Header />
-        {children}
-        <Toaster />
+        <Providers>{children}</Providers>
       </SidebarInset>
     </SidebarProvider>
   );

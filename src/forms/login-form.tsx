@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import bcrypt from "bcryptjs";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const LoginSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string().required("Password is required"),
+  email: Yup.string().email("Correo inválido").required("El correo es requerido"),
+  password: Yup.string().required("La contraseña es requerida"),
 });
 
 export default function LoginForm() {
@@ -21,7 +22,7 @@ export default function LoginForm() {
   const router = useRouter();
 
   const storedUser = {
-    email: "fesapsv@yahoo.com",
+    email: "cruzcontroltours@gmail.com",
     hashedPassword: bcrypt.hashSync(process.env.NEXT_PUBLIC_PASSWORD ?? "", 10),
   };
   const handleLogin = async (values: { email: string; password: string }) => {
@@ -33,12 +34,16 @@ export default function LoginForm() {
     );
 
     if (values.email === storedUser.email && isMatch) {
+      // `Secure` solo en https: en http://localhost el navegador rechaza
+      // la cookie y la sesión nunca persistiría.
+      const secure =
+        window.location.protocol === "https:" ? "; Secure" : "";
       document.cookie = `auth_token=fake_token; path=/; max-age=${
         60 * 60 * 24
-      }; Secure; SameSite=Strict`;
-      router.push("/panel/eventos");
+      }${secure}; SameSite=Strict`;
+      router.push("/panel/clientes");
     } else {
-      alert("Credenciales incorrectas");
+      toast.error("Correo o contraseña incorrectos.");
     }
     setIsLoading(false);
   };
@@ -54,10 +59,7 @@ export default function LoginForm() {
       {({ errors, touched, isSubmitting }) => (
         <Form className="w-full max-w-md space-y-6 mx-auto px-4">
           <div>
-            <Label
-              htmlFor="email"
-              className="text-sm font-medium text-gray-700"
-            >
+            <Label htmlFor="email" className="text-sm font-medium">
               Usuario
             </Label>
             <Field
@@ -76,10 +78,7 @@ export default function LoginForm() {
           </div>
 
           <div>
-            <Label
-              htmlFor="password"
-              className="text-sm font-medium text-gray-700"
-            >
+            <Label htmlFor="password" className="text-sm font-medium">
               Contraseña
             </Label>
             <div className="relative mt-1">
@@ -95,7 +94,7 @@ export default function LoginForm() {
               />
               <button
                 type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
