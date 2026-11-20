@@ -163,24 +163,26 @@ export function UserFormDialog({
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <Label htmlFor="user-role">Rol</Label>
-            <Select
-              value={role}
-              onValueChange={(value) => setRole(value as RoleName)}
-            >
-              <SelectTrigger id="user-role">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {ROLE_OPTIONS.map((option) => (
-                  <SelectItem key={option} value={option}>
-                    {ROLE_LABELS[option]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {user?.role !== "superadmin" && (
+            <div className="space-y-1.5">
+              <Label htmlFor="user-role">Rol</Label>
+              <Select
+                value={role}
+                onValueChange={(value) => setRole(value as RoleName)}
+              >
+                <SelectTrigger id="user-role">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ROLE_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {ROLE_LABELS[option]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-1.5">
             <Label htmlFor="user-active">Estado</Label>

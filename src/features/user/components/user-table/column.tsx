@@ -78,19 +78,21 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver usuario
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Edit className="w-4 h-4" /> Editar usuario
-          </DropdownMenuItem>
           {row.original.role !== "superadmin" && (
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onClick={() => handleDelete(row.original.id)}
-            >
-              <Trash2 className="w-4 h-4" /> Borrar usuario
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEdit(row.original)}
+              >
+                <Edit className="w-4 h-4" /> Editar usuario
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDelete(row.original.id)}
+              >
+                <Trash2 className="w-4 h-4" /> Borrar usuario
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
