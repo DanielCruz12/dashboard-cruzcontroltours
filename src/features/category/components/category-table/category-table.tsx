@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { CategoryFormDialog } from "./category-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ const categoryFields: ViewField[] = [
 
 const CategoryList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const items = useAppSelector((state) => state.categories.items);
   const listStatus = useAppSelector((state) => state.categories.listStatus);
   const listError = useAppSelector((state) => state.categories.listError);
@@ -93,13 +95,15 @@ const CategoryList = () => {
   return (
     <>
       <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Crear categoría
-        </Button>
+        {canWrite && (
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4" /> Crear categoría
+          </Button>
+        )}
       </div>
       <DataTable
         placeholder="Buscar por nombre..."
-        columns={getColumns(setSelected, openEdit, handleDelete)}
+        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
         filterColumn="name"
         data={items}
       />

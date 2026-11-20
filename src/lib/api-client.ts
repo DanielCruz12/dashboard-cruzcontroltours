@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearSession, getToken } from "@/lib/session";
 
 // URL base del backend (incluye /api/v1).
 export const API_BASE_URL =
@@ -8,13 +9,37 @@ export const apiClient = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// El backend envuelve las respuestas en `{ data }`: desenvolver automáticamente.
-apiClient.interceptors.response.use((res) => {
-  if (res.data && typeof res.data === "object" && "data" in res.data) {
-    res.data = (res.data as { data: unknown }).data;
+// Adjunta el JWT de la sesión a cada petición.
+apiClient.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return res;
+  return config;
 });
+
+// El backend envuelve las respuestas en `{ data }`: desenvolver automáticamente.
+apiClient.interceptors.response.use(
+  (res) => {
+    if (res.data && typeof res.data === "object" && "data" in res.data) {
+      res.data = (res.data as { data: unknown }).data;
+    }
+    return res;
+  },
+  (error) => {
+    // Sesión inválida o expirada dentro del panel: limpiar y volver al login.
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      window.location.pathname.startsWith("/panel")
+    ) {
+      clearSession();
+      window.location.href = "/";
+    }
+    return Promise.reject(error);
+  },
+);
 
 export function toErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {

@@ -17,7 +17,8 @@ type DeleteCategoryFunction = (id: number) => void;
 export const getColumns = (
   handleView: CategoryAction,
   handleEdit: CategoryAction,
-  handleDelete: DeleteCategoryFunction
+  handleDelete: DeleteCategoryFunction,
+  canWrite = true
 ): ColumnDef<Category>[] => [
   {
     accessorKey: "name",
@@ -66,18 +67,22 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver categoría
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Edit className="w-4 h-4" /> Editar categoría
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar categoría
-          </DropdownMenuItem>
+          {canWrite && (
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEdit(row.original)}
+              >
+                <Edit className="w-4 h-4" /> Editar categoría
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDelete(row.original.id)}
+              >
+                <Trash2 className="w-4 h-4" /> Borrar categoría
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

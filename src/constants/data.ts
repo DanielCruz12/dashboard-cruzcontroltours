@@ -55,4 +55,13 @@ export const navItems = [
     shortcut: ["f", "f"],
     items: [],
   },
+  {
+    title: "Usuarios",
+    url: "/panel/usuarios",
+    icon: "userPen",
+    isActive: false,
+    shortcut: ["u", "u"],
+    items: [],
+    roles: ["superadmin"],
+  },
 ];

@@ -3,15 +3,15 @@
 Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar.
 **Actualiza este archivo al terminar cada sesión.**
 
-Última actualización: 2026-11-18
+Última actualización: 2026-11-19
 
 ## Stack
 
 - **Next.js 15.1** (App Router) + React 19 + TypeScript, puerto **3001** (`dev`/`start` con `-p 3001`).
 - **Tailwind CSS v3** + componentes **shadcn/ui** (`src/components/ui/`), tablas con **TanStack Table** (`DataTable` genérico en `src/components/ui/table/`).
 - HTTP con **axios** (`src/lib/api-client.ts`), fechas con **moment** (locale `es`), toasts con **react-hot-toast**.
-- Estado global con **Redux Toolkit + react-redux** (`src/lib/store/`: `toursSlice` con CRUD completo, `customersSlice` con lista/borrado).
-- Login local con **formik + yup** y **bcryptjs** (sin backend de auth, ver "Auth").
+- Estado global con **Redux Toolkit + react-redux** (`src/lib/store/`: slices por entidad con CRUD).
+- Auth real contra el backend (JWT + roles, ver "Auth").
 - Estructura:
   - `src/app/page.tsx` — login (`/`) con video lateral `/videos/1.mp4` (copiado del front)
   - `src/app/layout.tsx` — layout raíz con `<Toaster />` global (login + panel)
@@ -40,9 +40,10 @@ Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar
 
 ## Auth
 
-- Login en `/`: usuario fijo `cruzcontroltours@gmail.com` + contraseña de `NEXT_PUBLIC_PASSWORD` (comparada con bcrypt en el cliente).
-- Al entrar se crea la cookie `auth_token=fake_token` (24 h); `src/app/panel/layout.tsx` la exige para todo `/panel`. El flag `Secure` se pone solo en https (en `http://localhost` el navegador rechazaría la cookie y la sesión no persistiría).
-- ⚠️ La clave viaja en variable `NEXT_PUBLIC_*` (visible en el bundle): es auth temporal, no real. Ver pendientes.
+- Login en `/` contra `POST /auth/login` (`services/auth-service.ts`): guarda JWT + usuario en localStorage y cookie `auth_token` (12 h). El flag `Secure` se pone solo en https (en `http://localhost` el navegador rechazaría la cookie y la sesión no persistiría).
+- `src/app/panel/layout.tsx` exige la cookie para todo `/panel`; `api-client` adjunta el Bearer y ante un 401 limpia la sesión y vuelve al login.
+- Roles (`src/lib/session.ts`, hook `useSession`): `host` solo lectura (sin crear/editar/borrar en las 7 tablas), `admin` CRUD de contenido, `superadmin` además gestiona `/panel/usuarios` (único en el nav con `roles`, página blindada con `RequireRole`).
+- Usuarios iniciales (seed del backend): `superadmin@` / `admin@` / `host@cruzcontroltours.com`.
 
 ## Decisiones tomadas (NO volver a preguntar)
 
@@ -55,7 +56,6 @@ Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar
 
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3002/api/v1
-NEXT_PUBLIC_PASSWORD=cambia-esta-clave
 ```
 
 ## Comandos
@@ -69,11 +69,18 @@ npm run lint   # next lint
 
 ## Pendientes / recomendaciones
 
-- ⚠️ Auth real contra el backend (hoy la clave está en el bundle y la cookie es un string fijo): cuando el backend agregue login con roles, cambiar `login-form.tsx` y el guard de `panel/layout.tsx`.
 - ⚠️ Correr `npm install` en el panel (deps nuevas `@reduxjs/toolkit` y `react-redux` agregadas a `package.json`).
+- `bcryptjs` y `formik` solo los usa el login (formik) o nada (bcryptjs ya no): candidatos a limpieza junto a `yup`, `cmdk`, `embla-carousel`, `recharts`, `react-google-recaptcha`, `react-select`.
 - Revisar deps sin uso tras la limpieza (`formik` solo lo usa el login; `yup`, `cmdk`, `embla-carousel`, `recharts`, `react-google-recaptcha`, `react-select` podrían sobrar).
 
 ## Historial de sesiones
+
+### 2026-11-19 — auth real + roles + sección Usuarios
+
+1. Login contra `POST /auth/login` (fuera bcrypt/clave fija/`fake_token`): `services/auth-service.ts`, `lib/session.ts` (token+usuario, `useSession` con `canWrite`/`isSuperadmin`), `api-client` con Bearer y redirect al login ante 401. `NEXT_PUBLIC_PASSWORD` eliminado del ejemplo.
+2. Permisos: host sin crear/editar/borrar en las 7 tablas (`canWrite` en cada `column.tsx` + botones); `/panel/tours/nuevo` y `/panel/usuarios` blindadas con `RequireRole`; nav filtra Usuarios (solo superadmin); user-nav muestra el rol.
+3. Sección Usuarios (superadmin): `services/user-service.ts`, `store/usersSlice.ts`, feature `user-table` (columnas+tabla+diálogo con rol/estado/clave opcional en edición), página `/panel/usuarios`, item del nav.
+4. Backend: ver HANDOFF del backend (tablas, endpoints, seed).
 
 ### 2026-11-18 (5) — crear tour en página + archivos + select categoría + switch
 

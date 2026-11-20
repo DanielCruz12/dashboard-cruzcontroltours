@@ -30,7 +30,8 @@ export function formatPrice(price: string | number): string {
 export const getColumns = (
   handleView: BookingAction,
   handleEdit: BookingAction,
-  handleDelete: DeleteBookingFunction
+  handleDelete: DeleteBookingFunction,
+  canWrite = true
 ): ColumnDef<Booking>[] => [
   {
     accessorKey: "id",
@@ -114,18 +115,22 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver reserva
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Edit className="w-4 h-4" /> Editar reserva
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar reserva
-          </DropdownMenuItem>
+          {canWrite && (
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEdit(row.original)}
+              >
+                <Edit className="w-4 h-4" /> Editar reserva
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDelete(row.original.id)}
+              >
+                <Trash2 className="w-4 h-4" /> Borrar reserva
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

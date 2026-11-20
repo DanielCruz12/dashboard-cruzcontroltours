@@ -25,7 +25,8 @@ export function formatPrice(price: string | number): string {
 export const getColumns = (
   handleView: TourAction,
   handleEdit: TourAction,
-  handleDelete: DeleteTourFunction
+  handleDelete: DeleteTourFunction,
+  canWrite = true
 ): ColumnDef<Tour>[] => [
   {
     accessorKey: "title",
@@ -97,18 +98,22 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver tour
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Edit className="w-4 h-4" /> Editar tour
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar tour
-          </DropdownMenuItem>
+          {canWrite && (
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEdit(row.original)}
+              >
+                <Edit className="w-4 h-4" /> Editar tour
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDelete(row.original.id)}
+              >
+                <Trash2 className="w-4 h-4" /> Borrar tour
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

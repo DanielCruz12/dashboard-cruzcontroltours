@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { formatPrice, getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { BookingFormDialog } from "./booking-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ const bookingFields: ViewField[] = [
 
 const BookingList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const items = useAppSelector((state) => state.bookings.items);
   const listStatus = useAppSelector((state) => state.bookings.listStatus);
   const listError = useAppSelector((state) => state.bookings.listError);
@@ -90,7 +92,7 @@ const BookingList = () => {
     <>
       <DataTable
         placeholder="Buscar por usuario..."
-        columns={getColumns(setSelected, openEdit, handleDelete)}
+        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
         filterColumn="userId"
         data={items}
       />

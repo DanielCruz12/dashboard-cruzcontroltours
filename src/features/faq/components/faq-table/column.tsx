@@ -17,7 +17,8 @@ type DeleteFaqFunction = (id: number) => void;
 export const getColumns = (
   handleView: FaqAction,
   handleEdit: FaqAction,
-  handleDelete: DeleteFaqFunction
+  handleDelete: DeleteFaqFunction,
+  canWrite = true
 ): ColumnDef<Faq>[] => [
   {
     accessorKey: "question",
@@ -59,18 +60,22 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver pregunta
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Edit className="w-4 h-4" /> Editar pregunta
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar pregunta
-          </DropdownMenuItem>
+          {canWrite && (
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEdit(row.original)}
+              >
+                <Edit className="w-4 h-4" /> Editar pregunta
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDelete(row.original.id)}
+              >
+                <Trash2 className="w-4 h-4" /> Borrar pregunta
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

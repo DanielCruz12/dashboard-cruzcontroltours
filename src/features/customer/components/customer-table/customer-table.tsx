@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
 import { ViewDialog, ViewField } from "@/components/view-dialog";
@@ -25,6 +26,7 @@ const customerFields: ViewField[] = [
 
 const CustomerList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const items = useAppSelector((state) => state.customers.items);
   const listStatus = useAppSelector((state) => state.customers.listStatus);
   const listError = useAppSelector((state) => state.customers.listError);
@@ -73,7 +75,7 @@ const CustomerList = () => {
     <>
       <DataTable
         placeholder="Buscar por nombre..."
-        columns={getColumns(handleDelete, setSelected)}
+        columns={getColumns(handleDelete, setSelected, canWrite)}
         filterColumn="nombre"
         data={items}
       />

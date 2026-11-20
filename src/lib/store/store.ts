@@ -6,6 +6,7 @@ import faqsReducer from "./faqsSlice";
 import protocolsReducer from "./protocolsSlice";
 import reviewsReducer from "./reviewsSlice";
 import toursReducer from "./toursSlice";
+import usersReducer from "./usersSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     protocols: protocolsReducer,
     reviews: reviewsReducer,
     tours: toursReducer,
+    users: usersReducer,
   },
 });
 

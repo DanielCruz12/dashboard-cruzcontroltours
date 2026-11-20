@@ -16,9 +16,11 @@ import {
 
 export function UserNav() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string; email: string } | null>(
-    null
-  );
+  const [user, setUser] = useState<{
+    name: string;
+    email: string;
+    role?: string;
+  } | null>(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "null");
@@ -53,6 +55,11 @@ export function UserNav() {
             <span className="truncate text-xs">
               {user?.email || "cruzcontroltours@gmail.com"}
             </span>
+            {user?.role && (
+              <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                {user.role}
+              </span>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

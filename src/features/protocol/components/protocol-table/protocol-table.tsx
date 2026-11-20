@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { ProtocolFormDialog } from "./protocol-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ const protocolFields: ViewField[] = [
 
 const ProtocolList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const items = useAppSelector((state) => state.protocols.items);
   const listStatus = useAppSelector((state) => state.protocols.listStatus);
   const listError = useAppSelector((state) => state.protocols.listError);
@@ -94,13 +96,15 @@ const ProtocolList = () => {
   return (
     <>
       <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Crear protocolo
-        </Button>
+        {canWrite && (
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4" /> Crear protocolo
+          </Button>
+        )}
       </div>
       <DataTable
         placeholder="Buscar por título..."
-        columns={getColumns(setSelected, openEdit, handleDelete)}
+        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
         filterColumn="title"
         data={items}
       />

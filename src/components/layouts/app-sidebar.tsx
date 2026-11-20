@@ -23,6 +23,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
 import { Icons } from "../icons";
+import { useSession } from "@/lib/session";
 
 export const company = {
   name: "Cruz Control Tours",
@@ -32,6 +33,13 @@ export const company = {
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const { role } = useSession();
+  // Items con `roles` solo se muestran a esos roles (p. ej. Usuarios).
+  const visibleItems = navItems.filter(
+    (item) =>
+      !("roles" in item) ||
+      ((item as { roles?: string[] }).roles ?? []).includes(role ?? ""),
+  );
 
   return (
     <Sidebar collapsible="icon">
@@ -50,7 +58,7 @@ export default function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Opciones</SidebarGroupLabel>
           <SidebarMenu>
-            {navItems.map((item) => {
+            {visibleItems.map((item) => {
               const Icon = item.icon ? (Icons as any)[item.icon] : Icons.logo;
 
               return item?.items && item?.items?.length > 0 ? (

@@ -16,7 +16,8 @@ type DeleteProtocolFunction = (id: number) => void;
 export const getColumns = (
   handleView: ProtocolAction,
   handleEdit: ProtocolAction,
-  handleDelete: DeleteProtocolFunction
+  handleDelete: DeleteProtocolFunction,
+  canWrite = true
 ): ColumnDef<Protocol>[] => [
   {
     accessorKey: "title",
@@ -64,18 +65,22 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver protocolo
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleEdit(row.original)}
-          >
-            <Edit className="w-4 h-4" /> Editar protocolo
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar protocolo
-          </DropdownMenuItem>
+          {canWrite && (
+            <>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleEdit(row.original)}
+              >
+                <Edit className="w-4 h-4" /> Editar protocolo
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDelete(row.original.id)}
+              >
+                <Trash2 className="w-4 h-4" /> Borrar protocolo
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

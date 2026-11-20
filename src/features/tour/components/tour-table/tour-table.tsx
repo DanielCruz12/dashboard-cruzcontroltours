@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { formatPrice, getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { TourFormDialog } from "./tour-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -51,6 +52,7 @@ const tourFields: ViewField[] = [
 
 const TourList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const router = useRouter();
   const items = useAppSelector((state) => state.tours.items);
   const listStatus = useAppSelector((state) => state.tours.listStatus);
@@ -120,13 +122,15 @@ const TourList = () => {
   return (
     <>
       <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Crear tour
-        </Button>
+        {canWrite && (
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4" /> Crear tour
+          </Button>
+        )}
       </div>
       <DataTable
         placeholder="Buscar por título..."
-        columns={getColumns(setSelected, openEdit, handleDelete)}
+        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
         filterColumn="title"
         data={items}
       />

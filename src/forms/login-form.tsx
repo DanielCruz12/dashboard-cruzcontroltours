@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import bcrypt from "bcryptjs";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { login } from "@/services/auth-service";
+import { saveSession } from "@/lib/session";
+import { toErrorMessage } from "@/lib/api-client";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Correo inválido").required("El correo es requerido"),
@@ -21,29 +23,14 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const storedUser = {
-    email: "cruzcontroltours@gmail.com",
-    hashedPassword: bcrypt.hashSync(process.env.NEXT_PUBLIC_PASSWORD ?? "", 10),
-  };
   const handleLogin = async (values: { email: string; password: string }) => {
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500)); // 2 seconds timeout
-    const isMatch = await bcrypt.compare(
-      values.password,
-      storedUser.hashedPassword
-    );
-
-    if (values.email === storedUser.email && isMatch) {
-      // `Secure` solo en https: en http://localhost el navegador rechaza
-      // la cookie y la sesión nunca persistiría.
-      const secure =
-        window.location.protocol === "https:" ? "; Secure" : "";
-      document.cookie = `auth_token=fake_token; path=/; max-age=${
-        60 * 60 * 24
-      }${secure}; SameSite=Strict`;
+    try {
+      const { token, user } = await login(values.email, values.password);
+      saveSession(token, user);
       router.push("/panel/clientes");
-    } else {
-      toast.error("Correo o contraseña incorrectos.");
+    } catch (error) {
+      toast.error(toErrorMessage(error));
     }
     setIsLoading(false);
   };

@@ -17,7 +17,8 @@ type ViewReviewFunction = (review: Review) => void;
 
 export const getColumns = (
   handleDelete: DeleteReviewFunction,
-  handleView: ViewReviewFunction
+  handleView: ViewReviewFunction,
+  canWrite = true
 ): ColumnDef<Review>[] => [
   {
     accessorKey: "tourId",
@@ -87,12 +88,14 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver reseña
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar reseña
-          </DropdownMenuItem>
+          {canWrite && (
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handleDelete(row.original.id)}
+            >
+              <Trash2 className="w-4 h-4" /> Borrar reseña
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

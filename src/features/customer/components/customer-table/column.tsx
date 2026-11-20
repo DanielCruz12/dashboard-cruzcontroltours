@@ -17,7 +17,8 @@ type ViewCustomerFunction = (customer: Customer) => void;
 
 export const getColumns = (
   handleDelete: DeleteCustomerFunction,
-  handleView: ViewCustomerFunction
+  handleView: ViewCustomerFunction,
+  canWrite = true
 ): ColumnDef<Customer>[] => [
   {
     accessorKey: "nombre",
@@ -79,12 +80,14 @@ export const getColumns = (
           >
             <Eye className="w-4 h-4" /> Ver cliente
           </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => handleDelete(row.original.id)}
-          >
-            <Trash2 className="w-4 h-4" /> Borrar cliente
-          </DropdownMenuItem>
+          {canWrite && (
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handleDelete(row.original.id)}
+            >
+              <Trash2 className="w-4 h-4" /> Borrar cliente
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     ),

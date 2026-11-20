@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { FaqFormDialog } from "./faq-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ const faqFields: ViewField[] = [
 
 const FaqList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const items = useAppSelector((state) => state.faqs.items);
   const listStatus = useAppSelector((state) => state.faqs.listStatus);
   const listError = useAppSelector((state) => state.faqs.listError);
@@ -87,14 +89,16 @@ const FaqList = () => {
 
   return (
     <>
-      <div className="flex justify-end">
-        <Button onClick={openCreate}>
-          <Plus className="h-4 w-4" /> Crear pregunta
-        </Button>
-      </div>
+      {canWrite && (
+        <div className="flex justify-end">
+          <Button onClick={openCreate}>
+            <Plus className="h-4 w-4" /> Crear pregunta
+          </Button>
+        </div>
+      )}
       <DataTable
         placeholder="Buscar por pregunta..."
-        columns={getColumns(setSelected, openEdit, handleDelete)}
+        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
         filterColumn="question"
         data={items}
       />

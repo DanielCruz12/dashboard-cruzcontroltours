@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { getColumns } from "./column";
+import { useSession } from "@/lib/session";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
 import { ViewDialog, ViewField } from "@/components/view-dialog";
@@ -35,6 +36,7 @@ const reviewFields: ViewField[] = [
 
 const ReviewList = () => {
   const dispatch = useAppDispatch();
+  const { canWrite } = useSession();
   const items = useAppSelector((state) => state.reviews.items);
   const listStatus = useAppSelector((state) => state.reviews.listStatus);
   const listError = useAppSelector((state) => state.reviews.listError);
@@ -83,7 +85,7 @@ const ReviewList = () => {
     <>
       <DataTable
         placeholder="Buscar por usuario..."
-        columns={getColumns(handleDelete, setSelected)}
+        columns={getColumns(handleDelete, setSelected, canWrite)}
         filterColumn="userId"
         data={items}
       />
