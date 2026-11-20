@@ -115,3 +115,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+/*
+  Escala global del panel: todo (letra incluida) al 90%.
+  Para ajustar el tamaño general solo cambia este valor (p. ej. 0.85).
+*/
+html {
+  zoom: 0.9;
+}
