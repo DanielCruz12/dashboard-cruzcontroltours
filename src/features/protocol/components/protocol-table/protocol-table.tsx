@@ -1,43 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { getColumns } from "./column";
+import { ProtocolDuplicateDialog } from "./protocol-duplicate-dialog";
 import { useSession } from "@/lib/session";
-import { ProtocolFormDialog } from "./protocol-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
-import { ViewDialog, ViewField } from "@/components/view-dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
+  createProtocol,
   fetchProtocols,
   removeProtocol,
-  resetSave,
 } from "@/lib/store/protocolsSlice";
 import { fetchTours } from "@/lib/store/toursSlice";
 import { Protocol } from "@/services/protocol-service";
 import { toErrorMessage } from "@/lib/api-client";
 
-const protocolFields: ViewField[] = [
-  { key: "id", label: "ID" },
-  { key: "tourId", label: "Tour (ID)" },
-  { key: "title", label: "Título" },
-  { key: "description", label: "Descripción" },
-];
-
 const ProtocolList = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { canWrite } = useSession();
   const items = useAppSelector((state) => state.protocols.items);
   const listStatus = useAppSelector((state) => state.protocols.listStatus);
   const listError = useAppSelector((state) => state.protocols.listError);
+  const saveStatus = useAppSelector((state) => state.protocols.saveStatus);
   const tours = useAppSelector((state) => state.tours.items);
   const toursStatus = useAppSelector((state) => state.tours.listStatus);
 
-  const [selected, setSelected] = useState<Protocol | null>(null);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<Protocol | null>(null);
+  const [duplicateTarget, setDuplicateTarget] = useState<Protocol | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -49,28 +45,53 @@ const ProtocolList = () => {
   }, [dispatch, listStatus, toursStatus]);
 
   const openCreate = () => {
-    dispatch(resetSave());
-    setEditing(null);
-    setFormOpen(true);
+    router.push("/panel/protocolos/nuevo");
+  };
+
+  const openView = (protocol: Protocol) => {
+    router.push(`/panel/protocolos/${protocol.id}`);
   };
 
   const openEdit = (protocol: Protocol) => {
-    dispatch(resetSave());
-    setEditing(protocol);
-    setFormOpen(true);
+    router.push(`/panel/protocolos/${protocol.id}/editar`);
   };
 
-  const handleDelete = async (id: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar este protocolo?",
-    );
-    if (!isConfirmed) return;
+  const handleDuplicate = (protocol: Protocol) => {
+    setDuplicateTarget(protocol);
+  };
 
+  const handleConfirmDuplicate = async (tourId: string) => {
+    if (!duplicateTarget) return;
     try {
-      await dispatch(removeProtocol(id)).unwrap();
-      toast.success("Protocolo eliminado con éxito");
+      await dispatch(
+        createProtocol({
+          tourId,
+          title: `${duplicateTarget.title} (copia)`,
+          description: duplicateTarget.description,
+        }),
+      ).unwrap();
+      toast.success("Protocolo duplicado con éxito");
+      setDuplicateTarget(null);
     } catch (error) {
       toast.error(toErrorMessage(error));
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
+    try {
+      await dispatch(removeProtocol(deleteId)).unwrap();
+      toast.success("Protocolo eliminado con éxito");
+      setDeleteId(null);
+    } catch (error) {
+      toast.error(toErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -104,26 +125,36 @@ const ProtocolList = () => {
       </div>
       <DataTable
         placeholder="Buscar por título..."
-        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
+        columns={getColumns(
+          openView,
+          openEdit,
+          handleDuplicate,
+          handleDelete,
+          canWrite,
+        )}
         filterColumn="title"
         data={items}
       />
-      <ViewDialog
-        open={selected !== null}
+      <ProtocolDuplicateDialog
+        key={`${duplicateTarget?.id ?? "none"}-${duplicateTarget !== null}`}
+        open={duplicateTarget !== null}
         onOpenChange={(open) => {
-          if (!open) setSelected(null);
+          if (!open) setDuplicateTarget(null);
         }}
-        title="Detalle del protocolo"
-        description="Información completa del protocolo."
-        data={selected}
-        fields={protocolFields}
-      />
-      <ProtocolFormDialog
-        key={`${editing?.id ?? "new"}-${formOpen}`}
-        open={formOpen}
-        onOpenChange={setFormOpen}
-        protocol={editing}
+        protocol={duplicateTarget}
         tours={tours}
+        saving={saveStatus === "loading"}
+        onConfirm={handleConfirmDuplicate}
+      />
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title="Eliminar protocolo"
+        description="¿Estás seguro de que deseas eliminar este protocolo? Esta acción no se puede deshacer."
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

@@ -31,8 +31,8 @@ export async function copyText(text: string): Promise<boolean> {
 export type QuestionType = "stars" | "text";
 
 export type FormQuestion = {
-  id: number;
-  formId: number;
+  id: string;
+  formId: string;
   label: string;
   type: string;
   required: boolean;
@@ -41,8 +41,8 @@ export type FormQuestion = {
 };
 
 export type ReviewFormListItem = {
-  id: number;
-  tourId: number;
+  id: string;
+  tourId: string;
   tourTitle: string;
   title: string;
   token: string;
@@ -54,8 +54,8 @@ export type ReviewFormListItem = {
 };
 
 export type ReviewFormDetail = {
-  id: number;
-  tourId: number;
+  id: string;
+  tourId: string;
   tourTitle: string;
   title: string;
   token: string;
@@ -73,32 +73,32 @@ export type QuestionInput = {
 };
 
 export type FormInput = {
-  tourId: number;
+  tourId: string;
   title: string;
   questions: QuestionInput[];
 };
 
 export type FormUpdateInput = {
   title?: string;
-  tourId?: number;
+  tourId?: string;
   isActive?: boolean;
 };
 
 export type DuplicateInput = {
-  tourId: number;
+  tourId: string;
   title: string;
   deactivateExisting?: boolean;
 };
 
 export type ExistingFormInfo = {
-  id: number;
+  id: string;
   title: string;
 };
 
 export type ResponseAnswer = {
-  id: number;
-  reviewId: number;
-  questionId: number;
+  id: string;
+  reviewId: string;
+  questionId: string;
   questionLabel: string;
   questionType: string;
   ratingValue: number | null;
@@ -106,19 +106,19 @@ export type ResponseAnswer = {
 };
 
 export type ResponseItem = {
-  id: number;
-  formId: number;
+  id: string;
+  formId: string;
   formTitle: string;
-  tourId: number;
+  tourId: string;
   tourTitle: string;
-  bookingId: number | null;
+  bookingId: string | null;
   authorName: string | null;
   createdAt: string;
   answers: ResponseAnswer[];
 };
 
 export type QuestionAverage = {
-  questionId: number;
+  questionId: string;
   questionLabel: string;
   average: number | null;
   count: number;
@@ -133,20 +133,20 @@ export type ResponsesPayload = {
 };
 
 export type ResponsesQuery = {
-  formId?: number;
-  tourId?: number;
+  formId?: string;
+  tourId?: string;
   page?: number;
   limit?: number;
 };
 
-export const listForms = async (tourId?: number): Promise<ReviewFormListItem[]> => {
+export const listForms = async (tourId?: string): Promise<ReviewFormListItem[]> => {
   const { data } = await apiClient.get<ReviewFormListItem[]>("/review-forms", {
     params: tourId ? { tourId } : undefined,
   });
   return data;
 };
 
-export const getForm = async (id: number): Promise<ReviewFormDetail> => {
+export const getForm = async (id: string): Promise<ReviewFormDetail> => {
   const { data } = await apiClient.get<ReviewFormDetail>(`/review-forms/${id}`);
   return data;
 };
@@ -162,7 +162,7 @@ export const createForm = async (
 };
 
 export const updateForm = async (
-  id: number,
+  id: string,
   input: FormUpdateInput,
 ): Promise<ReviewFormDetail> => {
   const { data } = await apiClient.put<ReviewFormDetail>(
@@ -173,13 +173,13 @@ export const updateForm = async (
 };
 
 /** true = se borró; false = tenía respuestas y se desactivó. */
-export const deleteForm = async (id: number): Promise<boolean> => {
+export const deleteForm = async (id: string): Promise<boolean> => {
   const res = await apiClient.delete(`/review-forms/${id}`);
   return res.status === 204;
 };
 
 export const duplicateForm = async (
-  id: number,
+  id: string,
   input: DuplicateInput,
 ): Promise<ReviewFormDetail> => {
   const { data } = await apiClient.post<ReviewFormDetail>(
@@ -190,7 +190,7 @@ export const duplicateForm = async (
 };
 
 export const createQuestion = async (
-  formId: number,
+  formId: string,
   input: QuestionInput,
 ): Promise<FormQuestion> => {
   const { data } = await apiClient.post<FormQuestion>(
@@ -201,7 +201,7 @@ export const createQuestion = async (
 };
 
 export const updateQuestion = async (
-  id: number,
+  id: string,
   input: Partial<QuestionInput>,
 ): Promise<FormQuestion> => {
   const { data } = await apiClient.put<FormQuestion>(
@@ -212,7 +212,7 @@ export const updateQuestion = async (
 };
 
 /** true = se borró; false = tenía respuestas y se desactivó. */
-export const deleteQuestion = async (id: number): Promise<boolean> => {
+export const deleteQuestion = async (id: string): Promise<boolean> => {
   const res = await apiClient.delete(`/review-questions/${id}`);
   return res.status === 204;
 };
@@ -220,7 +220,7 @@ export const deleteQuestion = async (id: number): Promise<boolean> => {
 export const listResponses = async (
   query: ResponsesQuery = {},
 ): Promise<ResponsesPayload> => {
-  const params: Record<string, number> = {};
+  const params: Record<string, number | string> = {};
   if (query.formId) params.formId = query.formId;
   if (query.tourId) params.tourId = query.tourId;
   if (query.page) params.page = query.page;

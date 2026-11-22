@@ -6,6 +6,7 @@ import { getColumns } from "./column";
 import { useSession } from "@/lib/session";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ViewDialog, ViewField } from "@/components/view-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchReviews, removeReview } from "@/lib/store/reviewsSlice";
@@ -41,6 +42,8 @@ const ReviewList = () => {
   const listStatus = useAppSelector((state) => state.reviews.listStatus);
   const listError = useAppSelector((state) => state.reviews.listError);
   const [selected, setSelected] = useState<Review | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -48,17 +51,21 @@ const ReviewList = () => {
     }
   }, [dispatch, listStatus]);
 
-  const handleDelete = async (id: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta reseña?",
-    );
-    if (!isConfirmed) return;
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
     try {
-      await dispatch(removeReview(id)).unwrap();
+      await dispatch(removeReview(deleteId)).unwrap();
       toast.success("Reseña eliminada con éxito");
+      setDeleteId(null);
     } catch (error) {
       toast.error(toErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -98,6 +105,16 @@ const ReviewList = () => {
         description="Información completa de la reseña."
         data={selected}
         fields={reviewFields}
+      />
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title="Eliminar reseña"
+        description="¿Estás seguro de que deseas eliminar esta reseña? Esta acción no se puede deshacer."
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

@@ -1,13 +1,13 @@
 import { apiClient } from "@/lib/api-client";
 
 export type Tour = {
-  id: number;
+  id: string;
   title: string;
   description: string | null;
   price: string;
   durationDays: number;
   active: boolean;
-  categoryId: number | null;
+  categoryId: string | null;
   images: string[];
   videos: string[];
   reviewCriteria: string[];
@@ -20,7 +20,7 @@ export type NewTourInput = {
   price: number | string;
   durationDays?: number;
   active?: boolean;
-  categoryId?: number | null;
+  categoryId?: string | null;
   images?: string[];
   videos?: string[];
   reviewCriteria?: string[];
@@ -31,7 +31,7 @@ export const listTours = async (): Promise<Tour[]> => {
   return data;
 };
 
-export const getTour = async (id: number): Promise<Tour> => {
+export const getTour = async (id: string): Promise<Tour> => {
   const { data } = await apiClient.get<Tour>(`/tours/${id}`);
   return data;
 };
@@ -42,13 +42,13 @@ export const createTour = async (input: NewTourInput): Promise<Tour> => {
 };
 
 export const updateTour = async (
-  id: number,
+  id: string,
   input: NewTourInput,
 ): Promise<Tour> => {
   const { data } = await apiClient.put<Tour>(`/tours/${id}`, input);
   return data;
 };
 
-export const deleteTour = async (id: number): Promise<void> => {
+export const deleteTour = async (id: string): Promise<void> => {
   await apiClient.delete(`/tours/${id}`);
 };

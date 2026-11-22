@@ -3,7 +3,7 @@
 Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar.
 **Actualiza este archivo al terminar cada sesión.**
 
-Última actualización: 2026-11-19
+Última actualización: 2026-11-22
 
 ## Stack
 
@@ -34,7 +34,7 @@ Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar
 ## Enlace con el backend
 
 - Backend: `http://localhost:3002/api/v1` (var `NEXT_PUBLIC_API_URL`, con ese fallback si falta).
-- Endpoints usados: `GET /customers` (lista, ya ordenada DESC por el backend) y `DELETE /customers/:id` (204, con confirmación `window.confirm` + toast); CRUD de tours: `GET/POST /tours`, `GET/PUT/DELETE /tours/:id`.
+- Endpoints usados: `GET /customers` (lista, ya ordenada DESC por el backend) y `DELETE /customers/:id` (204, con confirmación `ConfirmDialog` + toast); CRUD de tours: `GET/POST /tours`, `GET/PUT/DELETE /tours/:id`.
 - Los clientes **solo se crean desde el formulario `/contacto` del front**: el panel no tiene botón de crear, solo lista/busca/borra.
 - Misma tabla `customers` que la bandeja `/mensajes` del front (mismo contrato `{ data }`, `mensaje` puede ser `null`).
 
@@ -74,6 +74,19 @@ npm run lint   # next lint
 - Revisar deps sin uso tras la limpieza (`formik` solo lo usa el login; `yup`, `cmdk`, `embla-carousel`, `recharts`, `react-google-recaptcha`, `react-select` podrían sobrar).
 
 ## Historial de sesiones
+
+### 2026-11-22 — protocolos en páginas + editor enriquecido
+
+1. Protocolos fuera de modales: crear en `/panel/protocolos/nuevo`, ver en `/panel/protocolos/[id]` (documento completo) y editar en `/panel/protocolos/[id]/editar`. La tabla navega con `router.push`; borrado `protocol-form-dialog.tsx`.
+2. Nuevo `components/ui/rich-text-editor.tsx` (contentEditable sin dependencias: H1–H3, párrafo, negrita/cursiva/subrayado/tachado, listas, sangrías, alineación, cita, separador, enlaces, limpiar formato) + estilos `.rich-text-content` en `globals.css`. La descripción se guarda como HTML.
+3. Nuevo `lib/sanitize-html.ts` (`sanitizeHtml` para la vista, `htmlToText` para la columna de la tabla). `ProtocolForm` en página con el editor. Backend: `description` de protocolos ahora `max(100000)`.
+4. Verificación: backend `tsc --noEmit` limpio; panel tsc full falla por entorno (`@types/node/index.d.ts` "not found" aunque existe — pre-existente, ver nota 2026-11-18 (4)); con `types: [react, react-dom]` solo fallan `process`/`require` pre-existentes en archivos no tocados. ESLint roto en el entorno (`Cannot find module 'debug'`).
+5. Fix editor (mismo día): `formatBlock` nativo convertía TODO en H1 porque el contenido era un solo bloque. Ahora `applyBlock` normaliza a `<p>` por bloque (`defaultParagraphSeparator=p`, convierte `<div>` de Enter, envuelve texto suelto) y si la selección es parcial parte el bloque e inserta el título/cita solo con el texto elegido (con fallback a nativo si el DOM es raro). Normalización diferida al pegar.
+6. Editor: color de texto y resaltado (mismo día). Paletas con presets + color personalizado + "Quitar" en popovers (`applyColor` con `styleWithCSS=true` para generar `<span style>`, `clearInk` quita solo el color de la selección sin tocar el resto del formato).
+7. Botón "Descargar PDF" en ver protocolo (mismo día). Primero vía impresión; luego cambiado a descarga directa con `html2pdf.js` (el usuario instala: `pnpm add html2pdf.js` en panel-cruzcontroltours): nodo oculto A4 con estilos inline + `sanitizeCloneForCanvas` (quita oklch/lab/color-mix que rompen html2canvas), `import()` dinámico solo en el clic, A4 vertical, estado "Generando…". Tipos propios en `src/types/html2pdf.d.ts` (la lib no trae).
+8. Duplicar protocolo (mismo día): opción en el dropdown de la tabla y botón en la página de ver (tras duplicar navega a la copia). Solo canWrite. Al duplicar se abre `ProtocolDuplicateDialog` para elegir el tour de la copia (obligatorio, sin preselección); la copia hereda título + " (copia)" y descripción.
+9. Fuera diálogos nativos (mismo día): nuevo `components/confirm-dialog.tsx` (AlertDialog genérico) usado en los 9 borrados (reservas, categorías, clientes, faqs, protocolos, reseñas, formularios, tours, usuarios) con toasts; el `window.prompt` de enlaces del editor ahora es un Dialog propio con validación (guarda/restaura el rango de selección).
+10. Migración a UUID string (mismo día): servicios, slices, tablas (`handleDelete`/`deleteId`), formularios (`tourId`/`categoryId` sin `Number()`), páginas `[id]` (validan no-vacío), respuestas/duplicados de formularios. Nuevo `lib/utils.shortId()` para mostrar `#` + 8 chars en celdas/selects. Backend y front migrados en la misma sesión (ver HANDOFF del backend).
 
 ### 2026-11-20 — sección Formularios de reseñas
 

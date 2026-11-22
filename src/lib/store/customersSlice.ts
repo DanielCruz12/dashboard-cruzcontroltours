@@ -35,8 +35,8 @@ export const fetchCustomers = createAsyncThunk<
 });
 
 export const removeCustomer = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("customers/remove", async (id, { rejectWithValue }) => {
   try {

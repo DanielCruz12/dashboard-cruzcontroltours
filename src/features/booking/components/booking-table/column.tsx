@@ -9,12 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
+import { shortId } from "@/lib/utils";
 import { Booking, BookingStatus } from "@/services/booking-service";
 import moment from "moment";
 import "moment/locale/es";
 
 type BookingAction = (booking: Booking) => void;
-type DeleteBookingFunction = (id: number) => void;
+type DeleteBookingFunction = (id: string) => void;
 
 const STATUS_LABEL: Record<BookingStatus, string> = {
   pending: "Pendiente",
@@ -38,7 +39,9 @@ export const getColumns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="ID" />
     ),
-    cell: ({ row }) => <div className="font-medium">#{row.original.id}</div>,
+    cell: ({ row }) => (
+      <div className="font-medium">#{shortId(row.original.id)}</div>
+    ),
   },
   {
     accessorKey: "tourId",
@@ -46,7 +49,7 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title="Tour" />
     ),
     cell: ({ row }) => (
-      <span className="whitespace-nowrap">#{row.original.tourId}</span>
+      <span className="whitespace-nowrap">#{shortId(row.original.tourId)}</span>
     ),
   },
   {

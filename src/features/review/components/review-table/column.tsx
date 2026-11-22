@@ -8,11 +8,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
+import { shortId } from "@/lib/utils";
 import { Review } from "@/services/review-service";
 import moment from "moment";
 import "moment/locale/es";
 
-type DeleteReviewFunction = (id: number) => void;
+type DeleteReviewFunction = (id: string) => void;
 type ViewReviewFunction = (review: Review) => void;
 
 export const getColumns = (
@@ -26,7 +27,7 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title="Tour" />
     ),
     cell: ({ row }) => (
-      <div className="font-medium">#{row.original.tourId}</div>
+      <div className="font-medium">#{shortId(row.original.tourId)}</div>
     ),
   },
   {

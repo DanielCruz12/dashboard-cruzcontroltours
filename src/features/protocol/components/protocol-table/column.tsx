@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import { Copy, Edit, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,13 +9,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
 import { Protocol } from "@/services/protocol-service";
+import { shortId } from "@/lib/utils";
+import { htmlToText } from "@/lib/sanitize-html";
 
 type ProtocolAction = (protocol: Protocol) => void;
-type DeleteProtocolFunction = (id: number) => void;
+type DeleteProtocolFunction = (id: string) => void;
 
 export const getColumns = (
   handleView: ProtocolAction,
   handleEdit: ProtocolAction,
+  handleDuplicate: ProtocolAction,
   handleDelete: DeleteProtocolFunction,
   canWrite = true
 ): ColumnDef<Protocol>[] => [
@@ -34,7 +37,7 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title="Tour" />
     ),
     cell: ({ row }) => (
-      <span className="whitespace-nowrap">#{row.original.tourId}</span>
+      <span className="whitespace-nowrap">#{shortId(row.original.tourId)}</span>
     ),
   },
   {
@@ -44,7 +47,7 @@ export const getColumns = (
     ),
     cell: ({ row }) => (
       <div className="line-clamp-2 max-w-md">
-        {row.original.description || "—"}
+        {htmlToText(row.original.description) || "—"}
       </div>
     ),
   },
@@ -72,6 +75,12 @@ export const getColumns = (
                 onClick={() => handleEdit(row.original)}
               >
                 <Edit className="w-4 h-4" /> Editar protocolo
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onClick={() => handleDuplicate(row.original)}
+              >
+                <Copy className="w-4 h-4" /> Duplicar protocolo
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"

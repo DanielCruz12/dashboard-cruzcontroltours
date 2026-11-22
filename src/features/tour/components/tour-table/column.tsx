@@ -14,7 +14,7 @@ import moment from "moment";
 import "moment/locale/es";
 
 type TourAction = (tour: Tour) => void;
-type DeleteTourFunction = (id: number) => void;
+type DeleteTourFunction = (id: string) => void;
 
 /** `price` llega como string (numeric de Postgres): "$120.00". */
 export function formatPrice(price: string | number): string {

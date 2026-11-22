@@ -1,14 +1,14 @@
 import { apiClient } from "@/lib/api-client";
 
 export type Protocol = {
-  id: number;
-  tourId: number;
+  id: string;
+  tourId: string;
   title: string;
   description: string | null;
 };
 
 export type ProtocolInput = {
-  tourId: number;
+  tourId: string;
   title: string;
   description?: string | null;
 };
@@ -18,7 +18,7 @@ export const listProtocols = async (): Promise<Protocol[]> => {
   return data;
 };
 
-export const getProtocol = async (id: number): Promise<Protocol> => {
+export const getProtocol = async (id: string): Promise<Protocol> => {
   const { data } = await apiClient.get<Protocol>(`/protocols/${id}`);
   return data;
 };
@@ -31,13 +31,13 @@ export const createProtocol = async (
 };
 
 export const updateProtocol = async (
-  id: number,
+  id: string,
   input: ProtocolInput,
 ): Promise<Protocol> => {
   const { data } = await apiClient.put<Protocol>(`/protocols/${id}`, input);
   return data;
 };
 
-export const deleteProtocol = async (id: number): Promise<void> => {
+export const deleteProtocol = async (id: string): Promise<void> => {
   await apiClient.delete(`/protocols/${id}`);
 };

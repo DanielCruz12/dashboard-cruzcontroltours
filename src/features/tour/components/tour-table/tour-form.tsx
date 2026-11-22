@@ -106,7 +106,7 @@ export function TourForm({ tour, categories, onSuccess, onCancel }: TourFormProp
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
-    const category = categoryId === "none" ? null : Number(categoryId);
+    const category = categoryId === "none" ? null : categoryId;
 
     setUploading(true);
     try {

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export type RoleName = "superadmin" | "admin" | "host";
 
 export type SessionUser = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: RoleName;

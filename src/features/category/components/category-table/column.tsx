@@ -12,7 +12,7 @@ import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
 import { Category } from "@/services/category-service";
 
 type CategoryAction = (category: Category) => void;
-type DeleteCategoryFunction = (id: number) => void;
+type DeleteCategoryFunction = (id: string) => void;
 
 export const getColumns = (
   handleView: CategoryAction,

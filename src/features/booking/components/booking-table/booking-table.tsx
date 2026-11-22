@@ -7,6 +7,7 @@ import { useSession } from "@/lib/session";
 import { BookingFormDialog } from "./booking-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ViewDialog, ViewField } from "@/components/view-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
@@ -42,6 +43,8 @@ const BookingList = () => {
   const [selected, setSelected] = useState<Booking | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Booking | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -55,17 +58,21 @@ const BookingList = () => {
     setFormOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta reserva?",
-    );
-    if (!isConfirmed) return;
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
     try {
-      await dispatch(removeBooking(id)).unwrap();
+      await dispatch(removeBooking(deleteId)).unwrap();
       toast.success("Reserva eliminada con éxito");
+      setDeleteId(null);
     } catch (error) {
       toast.error(toErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -114,6 +121,16 @@ const BookingList = () => {
           booking={editing}
         />
       )}
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title="Eliminar reserva"
+        description="¿Estás seguro de que deseas eliminar esta reserva? Esta acción no se puede deshacer."
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
+      />
     </>
   );
 };

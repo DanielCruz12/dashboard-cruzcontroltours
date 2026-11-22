@@ -12,7 +12,7 @@ import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
 import { PanelUser } from "@/services/user-service";
 
 type UserAction = (user: PanelUser) => void;
-type DeleteUserFunction = (id: number) => void;
+type DeleteUserFunction = (id: string) => void;
 
 export const ROLE_LABELS: Record<PanelUser["role"], string> = {
   superadmin: "Superadmin",

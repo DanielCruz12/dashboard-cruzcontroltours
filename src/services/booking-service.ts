@@ -3,9 +3,9 @@ import { apiClient } from "@/lib/api-client";
 export type BookingStatus = "pending" | "paid" | "cancelled";
 
 export type Booking = {
-  id: number;
-  tourId: number;
-  departureId: number | null;
+  id: string;
+  tourId: string;
+  departureId: string | null;
   userId: string;
   guests: number;
   totalPrice: string;
@@ -24,19 +24,19 @@ export const listBookings = async (): Promise<Booking[]> => {
   return data;
 };
 
-export const getBooking = async (id: number): Promise<Booking> => {
+export const getBooking = async (id: string): Promise<Booking> => {
   const { data } = await apiClient.get<Booking>(`/bookings/${id}`);
   return data;
 };
 
 export const updateBooking = async (
-  id: number,
+  id: string,
   input: BookingUpdateInput,
 ): Promise<Booking> => {
   const { data } = await apiClient.put<Booking>(`/bookings/${id}`, input);
   return data;
 };
 
-export const deleteBooking = async (id: number): Promise<void> => {
+export const deleteBooking = async (id: string): Promise<void> => {
   await apiClient.delete(`/bookings/${id}`);
 };

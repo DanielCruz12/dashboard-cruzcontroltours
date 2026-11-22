@@ -12,7 +12,7 @@ import { Customer } from "@/services/customer-service";
 import moment from "moment";
 import "moment/locale/es";
 
-type DeleteCustomerFunction = (id: number) => void;
+type DeleteCustomerFunction = (id: string) => void;
 type ViewCustomerFunction = (customer: Customer) => void;
 
 export const getColumns = (

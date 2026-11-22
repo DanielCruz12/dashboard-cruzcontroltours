@@ -6,9 +6,9 @@ export type Rating = {
 };
 
 export type Review = {
-  id: number;
-  tourId: number;
-  bookingId: number;
+  id: string;
+  tourId: string;
+  bookingId: string;
   userId: string;
   ratings: Rating[];
   avgRating: string;
@@ -21,11 +21,11 @@ export const listReviews = async (): Promise<Review[]> => {
   return data;
 };
 
-export const getReview = async (id: number): Promise<Review> => {
+export const getReview = async (id: string): Promise<Review> => {
   const { data } = await apiClient.get<Review>(`/reviews/${id}`);
   return data;
 };
 
-export const deleteReview = async (id: number): Promise<void> => {
+export const deleteReview = async (id: string): Promise<void> => {
   await apiClient.delete(`/reviews/${id}`);
 };

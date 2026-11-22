@@ -16,7 +16,7 @@ export default function EditFormPage() {
   const params = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
 
-  const formId = Number(params.id);
+  const formId = params.id;
 
   useEffect(() => {
     dispatch(resetSave());
@@ -24,7 +24,7 @@ export default function EditFormPage() {
 
   const back = () => router.push("/panel/formularios");
 
-  if (!Number.isInteger(formId) || formId < 1) {
+  if (!formId) {
     return (
       <PageContainer>
         <div className="flex w-full flex-1 flex-col space-y-4 p-4">

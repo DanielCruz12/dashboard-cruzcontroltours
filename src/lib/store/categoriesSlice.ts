@@ -52,7 +52,7 @@ export const createCategory = createAsyncThunk<
 
 export const updateCategory = createAsyncThunk<
   Category,
-  { id: number; input: CategoryInput },
+  { id: string; input: CategoryInput },
   { rejectValue: string }
 >("categories/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -63,8 +63,8 @@ export const updateCategory = createAsyncThunk<
 });
 
 export const removeCategory = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("categories/remove", async (id, { rejectWithValue }) => {
   try {

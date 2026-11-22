@@ -74,7 +74,7 @@ export function DuplicateDialog({
     setWorking(true);
     try {
       const created = await duplicateForm(form.id, {
-        tourId: Number(tourId),
+        tourId: tourId,
         title: title.trim(),
         deactivateExisting,
       });

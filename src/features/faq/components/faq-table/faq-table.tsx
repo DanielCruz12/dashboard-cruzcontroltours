@@ -8,6 +8,7 @@ import { useSession } from "@/lib/session";
 import { FaqFormDialog } from "./faq-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ViewDialog, ViewField } from "@/components/view-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchFaqs, removeFaq, resetSave } from "@/lib/store/faqsSlice";
@@ -35,6 +36,8 @@ const FaqList = () => {
   const [selected, setSelected] = useState<Faq | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Faq | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -54,17 +57,21 @@ const FaqList = () => {
     setFormOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta pregunta?",
-    );
-    if (!isConfirmed) return;
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
     try {
-      await dispatch(removeFaq(id)).unwrap();
+      await dispatch(removeFaq(deleteId)).unwrap();
       toast.success("Pregunta eliminada con éxito");
+      setDeleteId(null);
     } catch (error) {
       toast.error(toErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -117,6 +124,16 @@ const FaqList = () => {
         open={formOpen}
         onOpenChange={setFormOpen}
         faq={editing}
+      />
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title="Eliminar pregunta"
+        description="¿Estás seguro de que deseas eliminar esta pregunta? Esta acción no se puede deshacer."
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

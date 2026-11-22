@@ -74,8 +74,8 @@ const ResponsesTab = () => {
   useEffect(() => {
     dispatch(
       fetchResponses({
-        tourId: tourFilter === ALL ? undefined : Number(tourFilter),
-        formId: formFilter === ALL ? undefined : Number(formFilter),
+        tourId: tourFilter === ALL ? undefined : tourFilter,
+        formId: formFilter === ALL ? undefined : formFilter,
         page,
         limit: 20,
       }),
@@ -85,7 +85,7 @@ const ResponsesTab = () => {
   const visibleForms =
     tourFilter === ALL
       ? forms
-      : forms.filter((form) => form.tourId === Number(tourFilter));
+      : forms.filter((form) => form.tourId === tourFilter);
 
   const totalPages = payload
     ? Math.max(1, Math.ceil(payload.total / payload.limit))
@@ -107,8 +107,8 @@ const ResponsesTab = () => {
   const reload = () =>
     dispatch(
       fetchResponses({
-        tourId: tourFilter === ALL ? undefined : Number(tourFilter),
-        formId: formFilter === ALL ? undefined : Number(formFilter),
+        tourId: tourFilter === ALL ? undefined : tourFilter,
+        formId: formFilter === ALL ? undefined : formFilter,
         page,
         limit: 20,
       }),

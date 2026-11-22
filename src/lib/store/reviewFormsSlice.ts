@@ -40,7 +40,7 @@ const initialState: ReviewFormsState = {
 
 export const fetchForms = createAsyncThunk<
   ReviewFormListItem[],
-  number | undefined,
+  string | undefined,
   { rejectValue: string }
 >("reviewForms/fetchAll", async (tourId, { rejectWithValue }) => {
   try {
@@ -52,7 +52,7 @@ export const fetchForms = createAsyncThunk<
 
 export const fetchFormDetail = createAsyncThunk<
   ReviewFormDetail,
-  number,
+  string,
   { rejectValue: string }
 >("reviewForms/fetchOne", async (id, { rejectWithValue }) => {
   try {
@@ -76,7 +76,7 @@ export const createForm = createAsyncThunk<
 
 export const updateForm = createAsyncThunk<
   ReviewFormDetail,
-  { id: number; input: FormUpdateInput },
+  { id: string; input: FormUpdateInput },
   { rejectValue: string }
 >("reviewForms/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -87,8 +87,8 @@ export const updateForm = createAsyncThunk<
 });
 
 export const removeForm = createAsyncThunk<
-  { id: number; deleted: boolean },
-  number,
+  { id: string; deleted: boolean },
+  string,
   { rejectValue: string }
 >("reviewForms/remove", async (id, { rejectWithValue }) => {
   try {

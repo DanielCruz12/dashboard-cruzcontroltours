@@ -52,7 +52,7 @@ export const createFaq = createAsyncThunk<
 
 export const updateFaq = createAsyncThunk<
   Faq,
-  { id: number; input: FaqInput },
+  { id: string; input: FaqInput },
   { rejectValue: string }
 >("faqs/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -63,8 +63,8 @@ export const updateFaq = createAsyncThunk<
 });
 
 export const removeFaq = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("faqs/remove", async (id, { rejectWithValue }) => {
   try {

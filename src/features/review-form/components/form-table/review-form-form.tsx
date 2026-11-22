@@ -37,14 +37,14 @@ import {
 import { toErrorMessage } from "@/lib/api-client";
 
 type ReviewFormFormProps = {
-  formId: number | null;
+  formId: string | null;
   onSuccess: () => void;
   onCancel: () => void;
 };
 
 type QuestionRow = {
   key: string;
-  id: number | null;
+  id: string | null;
   label: string;
   type: QuestionType;
   required: boolean;
@@ -79,7 +79,7 @@ export function ReviewFormForm({
   const [tourId, setTourId] = useState("");
   const [active, setActive] = useState(true);
   const [questions, setQuestions] = useState<QuestionRow[]>([blankRow()]);
-  const [originalIds, setOriginalIds] = useState<number[]>([]);
+  const [originalIds, setOriginalIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [working, setWorking] = useState(false);
 
@@ -159,7 +159,7 @@ export function ReviewFormForm({
       if (formId === null) {
         await dispatch(
           createForm({
-            tourId: Number(tourId),
+            tourId: tourId,
             title: title.trim(),
             questions: ordered.map((row) => ({
               label: row.label.trim(),
@@ -177,14 +177,14 @@ export function ReviewFormForm({
             id: formId,
             input: {
               title: title.trim(),
-              tourId: Number(tourId),
+              tourId: tourId,
               isActive: active,
             },
           }),
         ).unwrap();
         // Diff de preguntas contra las originales.
         const currentIds = new Set(
-          ordered.filter((row) => row.id !== null).map((row) => row.id as number),
+          ordered.filter((row) => row.id !== null).map((row) => row.id as string),
         );
         for (const id of originalIds) {
           if (!currentIds.has(id)) await deleteQuestion(id);

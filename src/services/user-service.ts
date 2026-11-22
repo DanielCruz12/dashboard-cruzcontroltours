@@ -2,7 +2,7 @@ import { apiClient } from "@/lib/api-client";
 import type { RoleName } from "@/lib/session";
 
 export type PanelUser = {
-  id: number;
+  id: string;
   name: string;
   email: string;
   role: RoleName;
@@ -19,7 +19,7 @@ export type PanelUserInput = {
 };
 
 export type Role = {
-  id: number;
+  id: string;
   name: string;
   description: string | null;
   createdAt: string;
@@ -30,7 +30,7 @@ export const listUsers = async (): Promise<PanelUser[]> => {
   return data;
 };
 
-export const getUser = async (id: number): Promise<PanelUser> => {
+export const getUser = async (id: string): Promise<PanelUser> => {
   const { data } = await apiClient.get<PanelUser>(`/users/${id}`);
   return data;
 };
@@ -43,14 +43,14 @@ export const createUser = async (
 };
 
 export const updateUser = async (
-  id: number,
+  id: string,
   input: PanelUserInput,
 ): Promise<PanelUser> => {
   const { data } = await apiClient.put<PanelUser>(`/users/${id}`, input);
   return data;
 };
 
-export const deleteUser = async (id: number): Promise<void> => {
+export const deleteUser = async (id: string): Promise<void> => {
   await apiClient.delete(`/users/${id}`);
 };
 

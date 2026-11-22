@@ -52,7 +52,7 @@ export const createProtocol = createAsyncThunk<
 
 export const updateProtocol = createAsyncThunk<
   Protocol,
-  { id: number; input: ProtocolInput },
+  { id: string; input: ProtocolInput },
   { rejectValue: string }
 >("protocols/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -63,8 +63,8 @@ export const updateProtocol = createAsyncThunk<
 });
 
 export const removeProtocol = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("protocols/remove", async (id, { rejectWithValue }) => {
   try {

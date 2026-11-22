@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { shortId } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -87,7 +88,7 @@ export function BookingFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Editar reserva #{booking.id}</DialogTitle>
+          <DialogTitle>Editar reserva #{shortId(booking.id)}</DialogTitle>
           <DialogDescription>
             Modifica los datos de la reserva y guarda los cambios.
           </DialogDescription>

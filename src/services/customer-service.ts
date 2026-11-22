@@ -2,7 +2,7 @@ import { apiClient } from "@/lib/api-client";
 
 // Clientes del formulario de contacto (tabla `customers` del backend).
 export type Customer = {
-  id: number;
+  id: string;
   nombre: string;
   telefono: string;
   correo: string;
@@ -15,6 +15,6 @@ export const getCustomers = async (): Promise<Customer[]> => {
   return data;
 };
 
-export const deleteCustomer = async (id: number): Promise<void> => {
+export const deleteCustomer = async (id: string): Promise<void> => {
   await apiClient.delete(`/customers/${id}`);
 };

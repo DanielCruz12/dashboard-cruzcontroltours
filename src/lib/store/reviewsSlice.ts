@@ -32,8 +32,8 @@ export const fetchReviews = createAsyncThunk<
 });
 
 export const removeReview = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("reviews/remove", async (id, { rejectWithValue }) => {
   try {

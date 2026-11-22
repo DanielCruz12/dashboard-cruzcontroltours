@@ -6,6 +6,7 @@ import { getColumns } from "./column";
 import { useSession } from "@/lib/session";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ViewDialog, ViewField } from "@/components/view-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
@@ -31,6 +32,8 @@ const CustomerList = () => {
   const listStatus = useAppSelector((state) => state.customers.listStatus);
   const listError = useAppSelector((state) => state.customers.listError);
   const [selected, setSelected] = useState<Customer | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -38,17 +41,21 @@ const CustomerList = () => {
     }
   }, [dispatch, listStatus]);
 
-  const handleDelete = async (id: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar este cliente?",
-    );
-    if (!isConfirmed) return;
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
     try {
-      await dispatch(removeCustomer(id)).unwrap();
+      await dispatch(removeCustomer(deleteId)).unwrap();
       toast.success("Cliente eliminado con éxito");
+      setDeleteId(null);
     } catch (error) {
       toast.error(toErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -88,6 +95,16 @@ const CustomerList = () => {
         description="Información completa del mensaje de contacto."
         data={selected}
         fields={customerFields}
+      />
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title="Eliminar cliente"
+        description="¿Estás seguro de que deseas eliminar este cliente? Esta acción no se puede deshacer."
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
       />
     </>
   );

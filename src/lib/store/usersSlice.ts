@@ -52,7 +52,7 @@ export const createUser = createAsyncThunk<
 
 export const updateUser = createAsyncThunk<
   PanelUser,
-  { id: number; input: PanelUserInput },
+  { id: string; input: PanelUserInput },
   { rejectValue: string }
 >("users/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -63,8 +63,8 @@ export const updateUser = createAsyncThunk<
 });
 
 export const removeUser = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("users/remove", async (id, { rejectWithValue }) => {
   try {

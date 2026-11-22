@@ -12,7 +12,7 @@ import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
 import { Faq } from "@/services/faq-service";
 
 type FaqAction = (faq: Faq) => void;
-type DeleteFaqFunction = (id: number) => void;
+type DeleteFaqFunction = (id: string) => void;
 
 export const getColumns = (
   handleView: FaqAction,

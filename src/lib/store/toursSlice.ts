@@ -53,7 +53,7 @@ export const createTour = createAsyncThunk<
 
 export const updateTour = createAsyncThunk<
   Tour,
-  { id: number; input: NewTourInput },
+  { id: string; input: NewTourInput },
   { rejectValue: string }
 >("tours/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -64,8 +64,8 @@ export const updateTour = createAsyncThunk<
 });
 
 export const removeTour = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("tours/remove", async (id, { rejectWithValue }) => {
   try {

@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/table";
 import { FormDetailDialog } from "./form-detail-dialog";
 import { DuplicateDialog } from "./duplicate-dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchForms, removeForm, resetSave } from "@/lib/store/reviewFormsSlice";
 import {
@@ -59,6 +60,8 @@ const FormList = () => {
   );
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -86,22 +89,26 @@ const FormList = () => {
     router.push(`/panel/formularios/${form.id}/editar`);
   };
 
-  const handleDelete = async (id: number) => {
-    const isConfirmed = window.confirm(
-      "¿Estás seguro de que deseas eliminar este formulario? Si ya tiene respuestas, se desactivará en su lugar.",
-    );
-    if (!isConfirmed) return;
+  const handleDelete = (id: string) => {
+    setDeleteId(id);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+    setDeleting(true);
     try {
-      const result = await dispatch(removeForm(id)).unwrap();
+      const result = await dispatch(removeForm(deleteId)).unwrap();
       if (result.deleted) {
         toast.success("Formulario eliminado con éxito");
       } else {
         toast.success("Tenía respuestas: se desactivó en su lugar");
         dispatch(fetchForms(undefined));
       }
+      setDeleteId(null);
     } catch (error) {
       toast.error(toErrorMessage(error));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -301,6 +308,16 @@ const FormList = () => {
           if (!open) setDuplicating(null);
         }}
         form={duplicating}
+      />
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) setDeleteId(null);
+        }}
+        title="Eliminar formulario"
+        description="¿Estás seguro de que deseas eliminar este formulario? Si ya tiene respuestas, se desactivará en su lugar."
+        busy={deleting}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

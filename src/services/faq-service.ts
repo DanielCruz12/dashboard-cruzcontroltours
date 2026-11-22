@@ -1,7 +1,7 @@
 import { apiClient } from "@/lib/api-client";
 
 export type Faq = {
-  id: number;
+  id: string;
   question: string;
   answer: string;
   active: boolean;
@@ -18,7 +18,7 @@ export const listFaqs = async (): Promise<Faq[]> => {
   return data;
 };
 
-export const getFaq = async (id: number): Promise<Faq> => {
+export const getFaq = async (id: string): Promise<Faq> => {
   const { data } = await apiClient.get<Faq>(`/faqs/${id}`);
   return data;
 };
@@ -29,13 +29,13 @@ export const createFaq = async (input: FaqInput): Promise<Faq> => {
 };
 
 export const updateFaq = async (
-  id: number,
+  id: string,
   input: FaqInput,
 ): Promise<Faq> => {
   const { data } = await apiClient.put<Faq>(`/faqs/${id}`, input);
   return data;
 };
 
-export const deleteFaq = async (id: number): Promise<void> => {
+export const deleteFaq = async (id: string): Promise<void> => {
   await apiClient.delete(`/faqs/${id}`);
 };

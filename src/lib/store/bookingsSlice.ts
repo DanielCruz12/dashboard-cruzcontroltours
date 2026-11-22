@@ -39,7 +39,7 @@ export const fetchBookings = createAsyncThunk<
 
 export const updateBooking = createAsyncThunk<
   Booking,
-  { id: number; input: BookingUpdateInput },
+  { id: string; input: BookingUpdateInput },
   { rejectValue: string }
 >("bookings/update", async ({ id, input }, { rejectWithValue }) => {
   try {
@@ -50,8 +50,8 @@ export const updateBooking = createAsyncThunk<
 });
 
 export const removeBooking = createAsyncThunk<
-  number,
-  number,
+  string,
+  string,
   { rejectValue: string }
 >("bookings/remove", async (id, { rejectWithValue }) => {
   try {
