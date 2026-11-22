@@ -5,6 +5,7 @@ import customersReducer from "./customersSlice";
 import faqsReducer from "./faqsSlice";
 import protocolsReducer from "./protocolsSlice";
 import reviewsReducer from "./reviewsSlice";
+import reviewFormsReducer from "./reviewFormsSlice";
 import toursReducer from "./toursSlice";
 import usersReducer from "./usersSlice";
 
@@ -16,6 +17,7 @@ export const store = configureStore({
     faqs: faqsReducer,
     protocols: protocolsReducer,
     reviews: reviewsReducer,
+    reviewForms: reviewFormsReducer,
     tours: toursReducer,
     users: usersReducer,
   },

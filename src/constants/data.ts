@@ -64,4 +64,12 @@ export const navItems = [
     items: [],
     roles: ["superadmin"],
   },
+  {
+    title: "Formularios",
+    url: "/panel/formularios",
+    icon: "forms",
+    isActive: false,
+    shortcut: ["o", "o"],
+    items: [],
+  },
 ];

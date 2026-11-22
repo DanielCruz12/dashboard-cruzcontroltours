@@ -184,18 +184,20 @@ export function UserFormDialog({
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <Label htmlFor="user-active">Estado</Label>
-            <Select value={active} onValueChange={setActive}>
-              <SelectTrigger id="user-active">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="true">Activo</SelectItem>
-                <SelectItem value="false">Inactivo</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {user !== null && (
+            <div className="space-y-1.5">
+              <Label htmlFor="user-active">Estado</Label>
+              <Select value={active} onValueChange={setActive}>
+                <SelectTrigger id="user-active">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="true">Activo</SelectItem>
+                  <SelectItem value="false">Inactivo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           {saveError && (
             <p className="text-sm text-red-600">{saveError}</p>

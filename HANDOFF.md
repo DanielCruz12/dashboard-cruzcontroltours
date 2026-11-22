@@ -75,6 +75,12 @@ npm run lint   # next lint
 
 ## Historial de sesiones
 
+### 2026-11-20 — sección Formularios de reseñas
+
+1. Nueva sección `/panel/formularios` (nav, visible a todos; mutaciones solo admin/superadmin): pestaña Formularios (tabla + constructor con título/tour/preguntas reordenables/tipo/obligatoria/activa + duplicar con modal y manejo del 409 + copiar link) y pestaña Respuestas (filtros por tour/formulario, promedios por pregunta, tabla paginada, detalle).
+2. Nuevos: `services/review-form-service.ts` (incluye `reviewLinkFor` con `NEXT_PUBLIC_FRONT_URL` y `copyText` con fallback), `store/reviewFormsSlice.ts`, feature `review-form/` (column, form-table, form-builder-dialog, duplicate-dialog, responses-tab). Link base del front en `.env.example`.
+3. Front público: `/review/[token]` (`app/review/[token]/page.tsx` + `components/ReviewSubmitForm.tsx`): estrellas clicables, textarea, validación, gracias; mensaje claro si el token no existe o está inactivo.
+
 ### 2026-11-19 — auth real + roles + sección Usuarios
 
 1. Login contra `POST /auth/login` (fuera bcrypt/clave fija/`fake_token`): `services/auth-service.ts`, `lib/session.ts` (token+usuario, `useSession` con `canWrite`/`isSuperadmin`), `api-client` con Bearer y redirect al login ante 401. `NEXT_PUBLIC_PASSWORD` eliminado del ejemplo.
