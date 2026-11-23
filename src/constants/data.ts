@@ -1,13 +1,5 @@
 export const navItems = [
   {
-    title: "Clientes",
-    url: "/panel/clientes",
-    icon: "user",
-    isActive: true,
-    shortcut: ["c", "c"],
-    items: [],
-  },
-  {
     title: "Tours",
     url: "/panel/tours",
     icon: "product",
@@ -24,19 +16,36 @@ export const navItems = [
     items: [],
   },
   {
-    title: "Protocolos",
-    url: "/panel/protocolos",
-    icon: "page",
-    isActive: false,
-    shortcut: ["p", "p"],
-    items: [],
-  },
-  {
     title: "Reservas",
     url: "/panel/reservas",
     icon: "billing",
     isActive: false,
     shortcut: ["r", "e"],
+    items: [],
+  },
+  {
+    title: "Despachos",
+    url: "/panel/despachos",
+    icon: "dispatch",
+    isActive: false,
+    shortcut: ["d", "d"],
+    items: [],
+    roles: ["superadmin", "host"],
+  },
+  {
+    title: "Clientes",
+    url: "/panel/clientes",
+    icon: "user",
+    isActive: true,
+    shortcut: ["c", "c"],
+    items: [],
+  },
+  {
+    title: "Formularios",
+    url: "/panel/formularios",
+    icon: "forms",
+    isActive: false,
+    shortcut: ["o", "o"],
     items: [],
   },
   {
@@ -56,6 +65,14 @@ export const navItems = [
     items: [],
   },
   {
+    title: "Blog",
+    url: "/panel/blog",
+    icon: "blog",
+    isActive: false,
+    shortcut: ["b", "b"],
+    items: [],
+  },
+  {
     title: "Usuarios",
     url: "/panel/usuarios",
     icon: "userPen",
@@ -63,13 +80,5 @@ export const navItems = [
     shortcut: ["u", "u"],
     items: [],
     roles: ["superadmin"],
-  },
-  {
-    title: "Formularios",
-    url: "/panel/formularios",
-    icon: "forms",
-    isActive: false,
-    shortcut: ["o", "o"],
-    items: [],
   },
 ];

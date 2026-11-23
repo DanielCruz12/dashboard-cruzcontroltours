@@ -3,8 +3,9 @@ import bookingsReducer from "./bookingsSlice";
 import categoriesReducer from "./categoriesSlice";
 import customersReducer from "./customersSlice";
 import faqsReducer from "./faqsSlice";
+import postsReducer from "./postsSlice";
 import protocolsReducer from "./protocolsSlice";
-import reviewsReducer from "./reviewsSlice";
+import rentalsReducer from "./rentalsSlice";
 import reviewFormsReducer from "./reviewFormsSlice";
 import toursReducer from "./toursSlice";
 import usersReducer from "./usersSlice";
@@ -15,8 +16,9 @@ export const store = configureStore({
     categories: categoriesReducer,
     customers: customersReducer,
     faqs: faqsReducer,
+    posts: postsReducer,
     protocols: protocolsReducer,
-    reviews: reviewsReducer,
+    rentals: rentalsReducer,
     reviewForms: reviewFormsReducer,
     tours: toursReducer,
     users: usersReducer,

@@ -10,8 +10,22 @@ export type Customer = {
   createdAt: string;
 };
 
+export type CustomerInput = {
+  nombre: string;
+  telefono: string;
+  correo: string;
+  mensaje?: string;
+};
+
 export const getCustomers = async (): Promise<Customer[]> => {
   const { data } = await apiClient.get<Customer[]>("/customers");
+  return data;
+};
+
+export const createCustomer = async (
+  input: CustomerInput,
+): Promise<Customer> => {
+  const { data } = await apiClient.post<Customer>("/customers", input);
   return data;
 };
 

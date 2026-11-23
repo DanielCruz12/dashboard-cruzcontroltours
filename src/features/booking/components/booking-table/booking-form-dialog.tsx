@@ -21,19 +21,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
-import { updateBooking } from "@/lib/store/bookingsSlice";
+import { createBooking, updateBooking } from "@/lib/store/bookingsSlice";
 import { Booking, BookingStatus } from "@/services/booking-service";
+import { Tour } from "@/services/tour-service";
 import { toErrorMessage } from "@/lib/api-client";
 
 type BookingFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  booking: Booking;
+  booking: Booking | null;
+  tours: Tour[];
 };
 
 const PRICE_RE = /^\d+(\.\d{1,2})?$/;
 
 type FieldErrors = {
+  tourId?: string;
+  userId?: string;
   guests?: string;
   totalPrice?: string;
 };
@@ -42,14 +46,21 @@ export function BookingFormDialog({
   open,
   onOpenChange,
   booking,
+  tours,
 }: BookingFormDialogProps) {
   const dispatch = useAppDispatch();
   const saveStatus = useAppSelector((state) => state.bookings.saveStatus);
   const saveError = useAppSelector((state) => state.bookings.saveError);
 
-  const [guests, setGuests] = useState(String(booking.guests));
-  const [totalPrice, setTotalPrice] = useState(String(Number(booking.totalPrice)));
-  const [status, setStatus] = useState<BookingStatus>(booking.status);
+  const [tourId, setTourId] = useState(booking ? booking.tourId : "");
+  const [userId, setUserId] = useState(booking ? booking.userId : "");
+  const [guests, setGuests] = useState(booking ? String(booking.guests) : "1");
+  const [totalPrice, setTotalPrice] = useState(
+    booking ? String(Number(booking.totalPrice)) : "",
+  );
+  const [status, setStatus] = useState<BookingStatus>(
+    booking ? booking.status : "pending",
+  );
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const saving = saveStatus === "loading";
@@ -58,6 +69,10 @@ export function BookingFormDialog({
     event.preventDefault();
 
     const next: FieldErrors = {};
+    if (!booking) {
+      if (!tourId) next.tourId = "Debes seleccionar un tour.";
+      if (!userId.trim()) next.userId = "El usuario es requerido.";
+    }
     const g = Number(guests);
     if (!Number.isInteger(g) || g < 1) {
       next.guests = "Debe ser 1 o más.";
@@ -71,13 +86,26 @@ export function BookingFormDialog({
     if (Object.keys(next).length > 0) return;
 
     try {
-      await dispatch(
-        updateBooking({
-          id: booking.id,
-          input: { guests: g, totalPrice: totalPrice.trim(), status },
-        }),
-      ).unwrap();
-      toast.success("Reserva actualizada con éxito");
+      if (booking) {
+        await dispatch(
+          updateBooking({
+            id: booking.id,
+            input: { guests: g, totalPrice: totalPrice.trim(), status },
+          }),
+        ).unwrap();
+        toast.success("Reserva actualizada con éxito");
+      } else {
+        await dispatch(
+          createBooking({
+            tourId,
+            userId: userId.trim(),
+            guests: g,
+            totalPrice: totalPrice.trim(),
+            status,
+          }),
+        ).unwrap();
+        toast.success("Reserva creada con éxito");
+      }
       onOpenChange(false);
     } catch (error) {
       toast.error(toErrorMessage(error));
@@ -88,12 +116,63 @@ export function BookingFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Editar reserva #{shortId(booking.id)}</DialogTitle>
+          <DialogTitle>
+            {booking
+              ? `Editar reserva #${shortId(booking.id)}`
+              : "Crear reserva"}
+          </DialogTitle>
           <DialogDescription>
-            Modifica los datos de la reserva y guarda los cambios.
+            {booking
+              ? "Modifica los datos de la reserva y guarda los cambios."
+              : "Carga manual de una reserva."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!booking && (
+            <>
+              <div className="space-y-1.5">
+                <Label htmlFor="booking-tour">Tour</Label>
+                <Select value={tourId} onValueChange={setTourId}>
+                  <SelectTrigger
+                    id="booking-tour"
+                    className={errors.tourId ? "border-red-500" : ""}
+                  >
+                    <SelectValue placeholder="Selecciona un tour" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tours.length === 0 && (
+                      <SelectItem value="none" disabled>
+                        Sin tours disponibles
+                      </SelectItem>
+                    )}
+                    {tours.map((tour) => (
+                      <SelectItem key={tour.id} value={tour.id}>
+                        #{shortId(tour.id)} — {tour.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.tourId && (
+                  <p className="text-xs text-red-600">{errors.tourId}</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="booking-user">Usuario (ID o correo)</Label>
+                <Input
+                  id="booking-user"
+                  value={userId}
+                  onChange={(event) => setUserId(event.target.value)}
+                  placeholder="p. ej. maria@correo.com"
+                  className={errors.userId ? "border-red-500" : ""}
+                />
+                {errors.userId && (
+                  <p className="text-xs text-red-600">{errors.userId}</p>
+                )}
+              </div>
+            </>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="booking-guests">Personas</Label>

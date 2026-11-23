@@ -48,7 +48,7 @@ function initialsOf(name: string) {
     .toUpperCase();
 }
 
-const ResponsesTab = () => {
+const ResponsesList = () => {
   const dispatch = useAppDispatch();
   const tours = useAppSelector((state) => state.tours.items);
   const toursStatus = useAppSelector((state) => state.tours.listStatus);
@@ -226,7 +226,7 @@ const ResponsesTab = () => {
 
       {listStatus === "loading" || listStatus === "idle" ? (
         <p className="py-10 text-center text-sm text-muted-foreground">
-          Cargando respuestas…
+          Cargando reseñas…
         </p>
       ) : listStatus === "failed" ? (
         <div className="rounded-md border p-6 text-center">
@@ -237,7 +237,7 @@ const ResponsesTab = () => {
         </div>
       ) : !payload || payload.items.length === 0 ? (
         <p className="rounded-md border p-6 text-center text-sm text-muted-foreground">
-          Aún no hay respuestas con estos filtros.
+          Aún no hay reseñas con estos filtros.
         </p>
       ) : (
         <>
@@ -323,4 +323,4 @@ const ResponsesTab = () => {
   );
 };
 
-export default ResponsesTab;
+export default ResponsesList;

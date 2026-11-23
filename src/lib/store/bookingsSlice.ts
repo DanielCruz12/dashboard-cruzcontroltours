@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
+  createBooking as apiCreateBooking,
   deleteBooking as apiDeleteBooking,
   listBookings as apiListBookings,
   updateBooking as apiUpdateBooking,
   type Booking,
+  type BookingCreateInput,
   type BookingUpdateInput,
 } from "@/services/booking-service";
 import { toErrorMessage } from "@/lib/api-client";
@@ -32,6 +34,18 @@ export const fetchBookings = createAsyncThunk<
 >("bookings/fetchAll", async (_, { rejectWithValue }) => {
   try {
     return await apiListBookings();
+  } catch (error) {
+    return rejectWithValue(toErrorMessage(error));
+  }
+});
+
+export const createBooking = createAsyncThunk<
+  Booking,
+  BookingCreateInput,
+  { rejectValue: string }
+>("bookings/create", async (input, { rejectWithValue }) => {
+  try {
+    return await apiCreateBooking(input);
   } catch (error) {
     return rejectWithValue(toErrorMessage(error));
   }
@@ -85,6 +99,19 @@ const bookingsSlice = createSlice({
         state.listStatus = "failed";
         state.listError =
           action.payload ?? "No se pudieron cargar las reservas.";
+      })
+      .addCase(createBooking.pending, (state) => {
+        state.saveStatus = "loading";
+        state.saveError = null;
+      })
+      .addCase(createBooking.fulfilled, (state, action) => {
+        state.saveStatus = "succeeded";
+        state.items.unshift(action.payload);
+      })
+      .addCase(createBooking.rejected, (state, action) => {
+        state.saveStatus = "failed";
+        state.saveError =
+          action.payload ?? "No se pudo guardar la reserva.";
       })
       .addCase(updateBooking.pending, (state) => {
         state.saveStatus = "loading";

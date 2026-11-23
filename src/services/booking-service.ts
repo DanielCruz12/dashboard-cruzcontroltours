@@ -13,6 +13,15 @@ export type Booking = {
   createdAt: string;
 };
 
+export type BookingCreateInput = {
+  tourId: string;
+  departureId?: string | null;
+  userId: string;
+  guests: number;
+  totalPrice: number | string;
+  status?: BookingStatus;
+};
+
 export type BookingUpdateInput = {
   guests?: number;
   totalPrice?: number | string;
@@ -26,6 +35,13 @@ export const listBookings = async (): Promise<Booking[]> => {
 
 export const getBooking = async (id: string): Promise<Booking> => {
   const { data } = await apiClient.get<Booking>(`/bookings/${id}`);
+  return data;
+};
+
+export const createBooking = async (
+  input: BookingCreateInput,
+): Promise<Booking> => {
+  const { data } = await apiClient.post<Booking>("/bookings", input);
   return data;
 };
 

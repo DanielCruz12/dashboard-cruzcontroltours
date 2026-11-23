@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Plus } from "lucide-react";
 import { formatPrice, getColumns } from "./column";
 import { useSession } from "@/lib/session";
 import { BookingFormDialog } from "./booking-form-dialog";
@@ -15,6 +16,7 @@ import {
   removeBooking,
   resetSave,
 } from "@/lib/store/bookingsSlice";
+import { fetchTours } from "@/lib/store/toursSlice";
 import { Booking } from "@/services/booking-service";
 import { toErrorMessage } from "@/lib/api-client";
 
@@ -39,6 +41,8 @@ const BookingList = () => {
   const items = useAppSelector((state) => state.bookings.items);
   const listStatus = useAppSelector((state) => state.bookings.listStatus);
   const listError = useAppSelector((state) => state.bookings.listError);
+  const tours = useAppSelector((state) => state.tours.items);
+  const toursStatus = useAppSelector((state) => state.tours.listStatus);
 
   const [selected, setSelected] = useState<Booking | null>(null);
   const [formOpen, setFormOpen] = useState(false);
@@ -50,7 +54,16 @@ const BookingList = () => {
     if (listStatus === "idle") {
       dispatch(fetchBookings());
     }
-  }, [dispatch, listStatus]);
+    if (toursStatus === "idle") {
+      dispatch(fetchTours());
+    }
+  }, [dispatch, listStatus, toursStatus]);
+
+  const openCreate = () => {
+    dispatch(resetSave());
+    setEditing(null);
+    setFormOpen(true);
+  };
 
   const openEdit = (booking: Booking) => {
     dispatch(resetSave());
@@ -97,6 +110,11 @@ const BookingList = () => {
 
   return (
     <>
+      <div className="flex justify-end">
+        <Button onClick={openCreate}>
+          <Plus className="h-4 w-4" /> Crear reserva
+        </Button>
+      </div>
       <DataTable
         placeholder="Buscar por usuario..."
         columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
@@ -113,14 +131,13 @@ const BookingList = () => {
         data={selected}
         fields={bookingFields}
       />
-      {editing && (
-        <BookingFormDialog
-          key={`${editing.id}-${formOpen}`}
-          open={formOpen}
-          onOpenChange={setFormOpen}
-          booking={editing}
-        />
-      )}
+      <BookingFormDialog
+        key={`${editing?.id ?? "new"}-${formOpen}`}
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        booking={editing}
+        tours={tours}
+      />
       <ConfirmDialog
         open={deleteId !== null}
         onOpenChange={(open) => {

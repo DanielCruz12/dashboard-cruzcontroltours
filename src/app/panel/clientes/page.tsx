@@ -8,7 +8,7 @@ const ListCustomers = () => {
       <div className="flex flex-1 flex-col space-y-4">
         <Heading
           title="Clientes"
-          description="Mensajes recibidos desde el formulario de contacto del sitio web."
+          description="Mensajes del formulario de contacto y clientes cargados manualmente."
         />
         <CustomerList />
       </div>

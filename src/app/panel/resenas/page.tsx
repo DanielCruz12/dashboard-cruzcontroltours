@@ -1,6 +1,6 @@
 import PageContainer from "@/components/layouts/page-container";
 import { Heading } from "@/components/ui/heading";
-import ReviewList from "@/features/review/components/review-table/review-table";
+import ResponsesList from "@/features/review/components/review-table/responses-list";
 
 const ListReviews = () => {
   return (
@@ -8,9 +8,9 @@ const ListReviews = () => {
       <div className="flex flex-1 flex-col space-y-4">
         <Heading
           title="Reseñas"
-          description="Consulta y modera las reseñas de tours."
+          description="Respuestas de los formularios de reseñas, por tour."
         />
-        <ReviewList />
+        <ResponsesList />
       </div>
     </PageContainer>
   );

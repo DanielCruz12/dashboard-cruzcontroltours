@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Plus } from "lucide-react";
 import { getColumns } from "./column";
+import { CustomerFormDialog } from "./customer-form-dialog";
 import { useSession } from "@/lib/session";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   fetchCustomers,
   removeCustomer,
+  resetSave,
 } from "@/lib/store/customersSlice";
 import { Customer } from "@/services/customer-service";
 import { toErrorMessage } from "@/lib/api-client";
@@ -32,6 +35,7 @@ const CustomerList = () => {
   const listStatus = useAppSelector((state) => state.customers.listStatus);
   const listError = useAppSelector((state) => state.customers.listError);
   const [selected, setSelected] = useState<Customer | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -40,6 +44,11 @@ const CustomerList = () => {
       dispatch(fetchCustomers());
     }
   }, [dispatch, listStatus]);
+
+  const openCreate = () => {
+    dispatch(resetSave());
+    setFormOpen(true);
+  };
 
   const handleDelete = (id: string) => {
     setDeleteId(id);
@@ -80,11 +89,21 @@ const CustomerList = () => {
 
   return (
     <>
+      <div className="flex justify-end">
+        <Button onClick={openCreate}>
+          <Plus className="h-4 w-4" /> Crear cliente
+        </Button>
+      </div>
       <DataTable
         placeholder="Buscar por nombre..."
         columns={getColumns(handleDelete, setSelected, canWrite)}
         filterColumn="nombre"
         data={items}
+      />
+      <CustomerFormDialog
+        key={`new-${formOpen}`}
+        open={formOpen}
+        onOpenChange={setFormOpen}
       />
       <ViewDialog
         open={selected !== null}

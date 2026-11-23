@@ -3,7 +3,7 @@
 Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar.
 **Actualiza este archivo al terminar cada sesión.**
 
-Última actualización: 2026-11-22
+Última actualización: 2026-11-23
 
 ## Stack
 
@@ -75,6 +75,20 @@ npm run lint   # next lint
 
 ## Historial de sesiones
 
+### 2026-11-23 (2) — respuestas movidas a Reseñas + reorden del nav
+
+1. La pestaña "Respuestas" salió de `/panel/formularios` (página sin tabs, solo `FormList`) y su contenido vive ahora en `/panel/resenas` como `features/review/components/review-table/responses-list.tsx` (`ResponsesList`; textos "reseñas" en vez de "respuestas").
+2. Borrado el flujo antiguo de `reviews` (nadie lo escribía: el front envía por formularios): `review-table.tsx`, `column.tsx`, `store/reviewsSlice.ts` (+ registro en `store.ts`) y `services/review-service.ts`. Backend conserva la tabla/endpoints.
+3. Nav en el orden pedido: tours, categorías, reservas, clientes, formularios, reseñas, blog, preguntas, usuarios. ⚠️ "Protocolos" quedó FUERA del nav (no venía en la lista); la ruta `/panel/protocolos` sigue viva — confirmar si se agrega y dónde.
+4. Sin verificación (el usuario corre lint/build/tsc/migraciones/tests). Revisado por lectura: sin imports colgando de los archivos borrados.
+
+### 2026-11-23 — CRUD de blog con editor tipo Word
+
+1. Nuevos `services/post-service.ts` (`Post`/`PostInput` + 5 funciones) y `store/postsSlice.ts` (thunks `fetchPosts`/`createPost`/`updatePost`/`removePost` + `resetSave`, registrado en `store.ts`). Nav "Blog" con icono nuevo `blog` (Newspaper) en `components/icons.tsx`.
+2. Nuevo feature `post/components/post-table/`: `column.tsx` (Título, Categoría, Estado Publicado/Borrador con Badge, Creado con moment; acciones ver/editar/borrar), `post-form.tsx` (título requerido, categoría, resumen, portada con subida a S3 al guardar, contenido con el `RichTextEditor` de protocolos, switch Publicado) y `post-table.tsx` (DataTable + `ConfirmDialog`).
+3. Páginas `/panel/blog`, `/panel/blog/nuevo`, `/panel/blog/[id]` (portada, resumen y contenido saneado con `sanitizeHtml`) y `/panel/blog/[id]/editar`; crear/editar blindadas con `RequireRole` admin/superadmin. Sin duplicar ni PDF (propios de protocolos).
+4. El asistente corrió build (OK: 4 rutas `/panel/blog*`) y eslint (0 errores en archivos nuevos; 2 warnings `no-img-element`, mismo patrón pre-existente de `tour-form.tsx`). NOTA: el usuario corre lint/build/tsc/migraciones/tests (no volver a correrlos).
+
 ### 2026-11-22 — protocolos en páginas + editor enriquecido
 
 1. Protocolos fuera de modales: crear en `/panel/protocolos/nuevo`, ver en `/panel/protocolos/[id]` (documento completo) y editar en `/panel/protocolos/[id]/editar`. La tabla navega con `router.push`; borrado `protocol-form-dialog.tsx`.
@@ -87,6 +101,9 @@ npm run lint   # next lint
 8. Duplicar protocolo (mismo día): opción en el dropdown de la tabla y botón en la página de ver (tras duplicar navega a la copia). Solo canWrite. Al duplicar se abre `ProtocolDuplicateDialog` para elegir el tour de la copia (obligatorio, sin preselección); la copia hereda título + " (copia)" y descripción.
 9. Fuera diálogos nativos (mismo día): nuevo `components/confirm-dialog.tsx` (AlertDialog genérico) usado en los 9 borrados (reservas, categorías, clientes, faqs, protocolos, reseñas, formularios, tours, usuarios) con toasts; el `window.prompt` de enlaces del editor ahora es un Dialog propio con validación (guarda/restaura el rango de selección).
 10. Migración a UUID string (mismo día): servicios, slices, tablas (`handleDelete`/`deleteId`), formularios (`tourId`/`categoryId` sin `Number()`), páginas `[id]` (validan no-vacío), respuestas/duplicados de formularios. Nuevo `lib/utils.shortId()` para mostrar `#` + 8 chars en celdas/selects. Backend y front migrados en la misma sesión (ver HANDOFF del backend).
+11. Espaciado icono-texto en menús (mismo día): `gap-2` en el `DropdownMenuItem` base; afecta a las acciones de todas las tablas.
+12. Crear cliente y reserva manuales (mismo día): botones "Crear" visibles a todos los roles (host incluido). Clientes: `CustomerFormDialog` (nombre/teléfono/correo/mensaje) + thunk `createCustomer` (slice con `saveStatus`/`resetSave` nuevos). Reservas: `BookingFormDialog` en modo crear (tour/userId/personas/total/estado; edición sin cambios) + thunk `createBooking`; la tabla carga tours. Editar/borrar siguen solo admin/superadmin.
+13. Módulo Despachos/rentals (mismo día): `services/rental-service.ts` + `rentalsSlice` (sin borrado) + feature `rental/` (column con Badge por status, form-dialog crear/editar con validación, tabla con filtros fecha/estado y búsqueda por cliente) + página `/panel/despachos` con `RequireRole(superadmin,host)` + nav `roles: [superadmin, host]` e icono `dispatch` (Truck). UI en español, campos/status en inglés.
 
 ### 2026-11-20 — sección Formularios de reseñas
 
