@@ -30,7 +30,7 @@ export const navItems = [
     isActive: false,
     shortcut: ["d", "d"],
     items: [],
-    roles: ["superadmin", "host"],
+    roles: ["superadmin", "host", "admin"],
   },
   {
     title: "Clientes",

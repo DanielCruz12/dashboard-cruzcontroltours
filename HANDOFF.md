@@ -75,6 +75,10 @@ npm run lint   # next lint
 
 ## Historial de sesiones
 
+### 2026-11-25 (3) — Despachos visible para admin + Favoritos
+
+1. Despachos ahora visible para `admin` (nav `roles` + `RequireRole` de la página: superadmin/host/admin). Favoritos del sidebar: Tours, Reservas, Despachos (antes Clientes).
+
 ### 2026-11-25 (2) — ajustes al rediseño + cards en Reservas/Despachos
 
 1. Sidebar sin campana de notificaciones ni filas Search/Home (el workspace conserva "Ir al inicio" en su menú).

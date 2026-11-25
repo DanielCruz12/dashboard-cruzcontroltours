@@ -5,7 +5,7 @@ import RentalList from "@/features/rental/components/rental-table/rental-table";
 
 const ListRentals = () => {
   return (
-    <RequireRole allow={["superadmin", "host"]}>
+    <RequireRole allow={["superadmin", "host", "admin"]}>
       <PageContainer scrollable={false}>
         <div className="flex flex-1 flex-col space-y-4">
           <Heading
