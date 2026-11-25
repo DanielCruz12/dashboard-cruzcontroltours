@@ -3,7 +3,7 @@
 Contexto acumulado del proyecto para continuar el trabajo sin volver a preguntar.
 **Actualiza este archivo al terminar cada sesión.**
 
-Última actualización: 2026-11-23
+Última actualización: 2026-11-25
 
 ## Stack
 
@@ -74,6 +74,23 @@ npm run lint   # next lint
 - Revisar deps sin uso tras la limpieza (`formik` solo lo usa el login; `yup`, `cmdk`, `embla-carousel`, `recharts`, `react-google-recaptcha`, `react-select` podrían sobrar).
 
 ## Historial de sesiones
+
+### 2026-11-25 (2) — ajustes al rediseño + cards en Reservas/Despachos
+
+1. Sidebar sin campana de notificaciones ni filas Search/Home (el workspace conserva "Ir al inicio" en su menú).
+2. Fuente revertida a la anterior (fuera el `fontFamily` de Geist del `tailwind.config.ts`); tamaños y resto del diseño intactos.
+3. Nuevo `components/stat-card.tsx` (icono + etiqueta + valor + detalle) y resúmenes calculados desde el store: `booking-summary-cards.tsx` (total, ingresos cobrados, personas, pendientes con monto por cobrar) y `rental-summary-cards.tsx` (total, hoy por fecha local, en ruta, completados con %). Renderizados encima de cada tabla; sin datos inventados.
+4. Sin verificación (el usuario corre lint/build/tsc/migraciones/tests). Revisado por lectura.
+
+### 2026-11-25 — rediseño SaaS minimalista tipo Linear/Refero (solo diseño)
+
+1. Tokens en `globals.css`: acento `#2F44E0` (`--primary`/`--ring`), bordes `#EAEAEA`, sidebar `#F7F7F8`, hover `#F1F1F2`, base 14px, foco visible azul, gráficas en escala de azules; Geist como `font-sans` en `tailwind.config.ts` (antes la variable se cargaba pero no se aplicaba).
+2. Sidebar (`layouts/app-sidebar.tsx`, 240px vía `ui/sidebar.tsx`): selector de espacio (logo 20px + nombre + chevron con menú real), campana (toast) y avatar (`UserNav`); Search (enfoca el filtro de la tabla), Home (`/panel/clientes`, destino del login); grupos "Favoritos" (Tours/Reservas/Clientes) y "Principal" (módulos con filtro de roles intacto); botón azul "+ Nuevo" (dropdown a los 4 `/nuevo`, solo `canWrite`); tarjeta fija abajo (estado + rol, Upgrade con toast, Ayuda → faqs, Salir con logout real). Activo `#EBEBEC` + radio 8px + `aria-current`; transición de fondo 120ms; móvil sigue con Sheet.
+3. Header sin UserNav (vive en el sidebar): breadcrumbs grises con títulos en español (nav + Nuevo/Editar + `#shortId`) y último nivel en negro con chevron; solo enlazan raíces de sección existentes; borde inferior, sin sombras.
+4. Área principal blanca con padding 32px (`page-container.tsx`); `Button` primario azul h-10 radio 8px sin sombras; `Card` borde `#EAEAEA` radio 12px sin sombra; títulos (`Heading`, `CardTitle`, `DialogTitle`) en `font-medium`; tooltip de gráficas oscuro y pequeño + ejes mínimos.
+5. `components/welcome-dialog.tsx` nuevo: 480px, radio 20px, padding 24px, overlay claro con `blur(6px)`, una sola vez por navegador (`localStorage cct-welcomed`), focus trap + Esc de Radix, animación fade + scale .96→1 en 200ms. Montado en `panel/layout.tsx`.
+6. Animaciones solo transform/opacity: fade-up con escalonado 60ms (`rise-group` en PageContainer y DataTable, `rise` en Card/ChartContainer), barras crecen desde 0 con la animación nativa de recharts, `prefers-reduced-motion` las desactiva.
+7. Sin verificación (el usuario corre lint/build/tsc/migraciones/tests). Revisado por lectura: rutas, roles y lógica intactos; iconos de dropdowns con `h-4 w-4` según convención.
 
 ### 2026-11-23 (2) — respuestas movidas a Reseñas + reorden del nav
 

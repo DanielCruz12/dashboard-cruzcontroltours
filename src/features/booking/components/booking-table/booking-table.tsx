@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 import { formatPrice, getColumns } from "./column";
+import { BookingSummaryCards } from "./booking-summary-cards";
 import { useSession } from "@/lib/session";
 import { BookingFormDialog } from "./booking-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
@@ -110,6 +111,7 @@ const BookingList = () => {
 
   return (
     <>
+      <BookingSummaryCards items={items} />
       <div className="flex justify-end">
         <Button onClick={openCreate}>
           <Plus className="h-4 w-4" /> Crear reserva

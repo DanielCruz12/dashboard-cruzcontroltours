@@ -1,6 +1,7 @@
 import AppSidebar from "@/components/layouts/app-sidebar";
 import Header from "@/components/layouts/header";
 import Providers from "@/components/providers";
+import WelcomeDialog from "@/components/welcome-dialog";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
@@ -31,6 +32,7 @@ export default async function DashboardLayout({
       <SidebarInset>
         <Header />
         <Providers>{children}</Providers>
+        <WelcomeDialog />
       </SidebarInset>
     </SidebarProvider>
   );

@@ -67,7 +67,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex flex-1 flex-col space-y-4">
+    <div className="rise-group flex flex-1 flex-col space-y-4">
       <div className="flex items-center justify-between">
         <Input
           placeholder={placeholder}

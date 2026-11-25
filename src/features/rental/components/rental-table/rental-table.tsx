@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus } from "lucide-react";
 import { getColumns, STATUS_LABELS } from "./column";
+import { RentalSummaryCards } from "./rental-summary-cards";
 import { RentalFormDialog } from "./rental-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
@@ -106,6 +107,7 @@ const RentalList = () => {
 
   return (
     <>
+      <RentalSummaryCards items={items} />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-wrap items-end gap-3">
           <div className="space-y-1.5">
