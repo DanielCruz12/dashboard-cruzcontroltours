@@ -131,6 +131,7 @@ const ProtocolList = () => {
           handleDuplicate,
           handleDelete,
           canWrite,
+          tours,
         )}
         filterColumn="title"
         data={items}

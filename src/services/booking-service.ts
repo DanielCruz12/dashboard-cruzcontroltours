@@ -26,6 +26,7 @@ export type BookingUpdateInput = {
   guests?: number;
   totalPrice?: number | string;
   status?: BookingStatus;
+  departureId?: string | null;
 };
 
 export const listBookings = async (): Promise<Booking[]> => {

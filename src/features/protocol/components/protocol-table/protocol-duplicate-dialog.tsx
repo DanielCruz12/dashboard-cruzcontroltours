@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { shortId } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -61,9 +60,7 @@ export function ProtocolDuplicateDialog({
             {protocol ? (
               <>
                 Se creará una copia de «{protocol.title}»
-                {currentTour
-                  ? ` (tour actual: #${shortId(currentTour.id)} — ${currentTour.title})`
-                  : ""}
+                {currentTour ? ` (tour actual: ${currentTour.title})` : ""}
                 . Elige el tour de la copia.
               </>
             ) : (
@@ -94,7 +91,7 @@ export function ProtocolDuplicateDialog({
               )}
               {tours.map((tour) => (
                 <SelectItem key={tour.id} value={String(tour.id)}>
-                  #{shortId(tour.id)} — {tour.title}
+                  {tour.title}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
 import { Protocol } from "@/services/protocol-service";
+import { Tour } from "@/services/tour-service";
 import { shortId } from "@/lib/utils";
 import { htmlToText } from "@/lib/sanitize-html";
 
@@ -20,8 +21,12 @@ export const getColumns = (
   handleEdit: ProtocolAction,
   handleDuplicate: ProtocolAction,
   handleDelete: DeleteProtocolFunction,
-  canWrite = true
-): ColumnDef<Protocol>[] => [
+  canWrite = true,
+  tours: Tour[] = []
+): ColumnDef<Protocol>[] => {
+  const toursById = new Map(tours.map((tour) => [tour.id, tour]));
+
+  return [
   {
     accessorKey: "title",
     header: ({ column }) => (
@@ -36,9 +41,24 @@ export const getColumns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Tour" />
     ),
-    cell: ({ row }) => (
-      <span className="whitespace-nowrap">#{shortId(row.original.tourId)}</span>
-    ),
+    cell: ({ row }) => {
+      const tour = toursById.get(row.original.tourId);
+      if (!tour) {
+        return (
+          <span
+            className="text-muted-foreground"
+            title={`Tour #${shortId(row.original.tourId)} (no encontrado)`}
+          >
+            Tour eliminado
+          </span>
+        );
+      }
+      return (
+        <div className="max-w-45 truncate" title={tour.title}>
+          {tour.title}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "description",
@@ -94,4 +114,5 @@ export const getColumns = (
       </DropdownMenu>
     ),
   },
-];
+  ];
+};

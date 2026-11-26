@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -23,14 +23,21 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { createBooking, updateBooking } from "@/lib/store/bookingsSlice";
 import { Booking, BookingStatus } from "@/services/booking-service";
+import {
+  Departure,
+  formatDepartureDateTime,
+  sortDepartures,
+} from "@/services/departure-service";
 import { Tour } from "@/services/tour-service";
 import { toErrorMessage } from "@/lib/api-client";
+import { formatPrice } from "../../lib/payment";
 
 type BookingFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   booking: Booking | null;
   tours: Tour[];
+  departures?: Departure[];
 };
 
 const PRICE_RE = /^\d+(\.\d{1,2})?$/;
@@ -47,6 +54,7 @@ export function BookingFormDialog({
   onOpenChange,
   booking,
   tours,
+  departures = [],
 }: BookingFormDialogProps) {
   const dispatch = useAppDispatch();
   const saveStatus = useAppSelector((state) => state.bookings.saveStatus);
@@ -58,12 +66,70 @@ export function BookingFormDialog({
   const [totalPrice, setTotalPrice] = useState(
     booking ? String(Number(booking.totalPrice)) : "",
   );
+  const [departureId, setDepartureId] = useState(
+    booking?.departureId ?? "none",
+  );
   const [status, setStatus] = useState<BookingStatus>(
     booking ? booking.status : "pending",
   );
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const saving = saveStatus === "loading";
+
+  const selectedTour = useMemo(
+    () => tours.find((tour) => tour.id === tourId),
+    [tours, tourId],
+  );
+  const tourDepartures = useMemo(
+    () =>
+      tourId
+        ? sortDepartures(departures.filter((item) => item.tourId === tourId))
+        : [],
+    [departures, tourId],
+  );
+  const selectedDeparture = useMemo(
+    () =>
+      departureId !== "none"
+        ? tourDepartures.find((item) => item.id === departureId)
+        : undefined,
+    [tourDepartures, departureId],
+  );
+
+  const expected = useMemo(() => {
+    if (!selectedTour) return null;
+    const g = Number(guests);
+    if (!Number.isInteger(g) || g < 1) return null;
+    const override = selectedDeparture?.priceOverride;
+    const unit =
+      override !== null &&
+      override !== undefined &&
+      String(override).trim() !== "" &&
+      Number(override) > 0
+        ? Number(override)
+        : Number(selectedTour.price);
+    if (!Number.isFinite(unit)) return null;
+    return Math.round(unit * g * 100) / 100;
+  }, [selectedTour, selectedDeparture, guests]);
+
+  const entered =
+    totalPrice.trim() !== "" && Number.isFinite(Number(totalPrice))
+      ? Number(totalPrice)
+      : null;
+
+  const handleTourChange = (value: string) => {
+    setTourId(value);
+    setDepartureId("none");
+    if (!booking && totalPrice.trim() === "") {
+      const tour = tours.find((item) => item.id === value);
+      const g = Number(guests);
+      if (tour && Number.isInteger(g) && g >= 1) {
+        const unit = Number(tour.price);
+        if (Number.isFinite(unit)) {
+          setTotalPrice(String(Math.round(unit * g * 100) / 100));
+        }
+      }
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -85,12 +151,18 @@ export function BookingFormDialog({
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
+    const departure = departureId === "none" ? null : departureId;
     try {
       if (booking) {
         await dispatch(
           updateBooking({
             id: booking.id,
-            input: { guests: g, totalPrice: totalPrice.trim(), status },
+            input: {
+              guests: g,
+              totalPrice: totalPrice.trim(),
+              status,
+              departureId: departure,
+            },
           }),
         ).unwrap();
         toast.success("Reserva actualizada con éxito");
@@ -102,6 +174,7 @@ export function BookingFormDialog({
             guests: g,
             totalPrice: totalPrice.trim(),
             status,
+            departureId: departure,
           }),
         ).unwrap();
         toast.success("Reserva creada con éxito");
@@ -132,7 +205,7 @@ export function BookingFormDialog({
             <>
               <div className="space-y-1.5">
                 <Label htmlFor="booking-tour">Tour</Label>
-                <Select value={tourId} onValueChange={setTourId}>
+                <Select value={tourId} onValueChange={handleTourChange}>
                   <SelectTrigger
                     id="booking-tour"
                     className={errors.tourId ? "border-red-500" : ""}
@@ -147,7 +220,7 @@ export function BookingFormDialog({
                     )}
                     {tours.map((tour) => (
                       <SelectItem key={tour.id} value={tour.id}>
-                        #{shortId(tour.id)} — {tour.title}
+                        {tour.title} — {formatPrice(tour.price)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -172,6 +245,37 @@ export function BookingFormDialog({
               </div>
             </>
           )}
+
+          <div className="space-y-1.5">
+            <Label htmlFor="booking-departure">
+              Salida / fecha (opcional)
+            </Label>
+            <Select
+              value={departureId}
+              onValueChange={setDepartureId}
+              disabled={!tourId || tourDepartures.length === 0}
+            >
+              <SelectTrigger id="booking-departure">
+                <SelectValue
+                  placeholder={
+                    !tourId
+                      ? "Primero elige un tour"
+                      : tourDepartures.length === 0
+                        ? "Este tour no tiene fechas"
+                        : "Sin salida asignada"
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Sin salida asignada</SelectItem>
+                {tourDepartures.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {formatDepartureDateTime(item)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
@@ -203,6 +307,48 @@ export function BookingFormDialog({
               )}
             </div>
           </div>
+
+          {selectedTour && expected !== null ? (
+            <div className="space-y-2 rounded-md border bg-muted/50 px-4 py-3 text-sm">
+              <p className="text-muted-foreground">
+                Esperado: {formatPrice(expected)}{" "}
+                <span className="text-xs">
+                  ({formatPrice(selectedTour.price)} × {guests}{" "}
+                  {Number(guests) === 1 ? "persona" : "personas"}
+                  {selectedDeparture?.priceOverride
+                    ? " · precio especial de la salida"
+                    : ""}
+                  )
+                </span>
+              </p>
+              {entered === null ? (
+                <p>Escribe el total cobrado para comparar.</p>
+              ) : expected - entered > 0.005 ? (
+                <p className="font-medium text-amber-700">
+                  Faltan {formatPrice(expected - entered)} · quedará
+                  Incompleta.
+                </p>
+              ) : entered - expected > 0.005 ? (
+                <p className="font-medium text-blue-700">
+                  Excede por {formatPrice(entered - expected)}.
+                </p>
+              ) : (
+                <p className="font-medium text-emerald-700">
+                  Completo · cubre el precio del tour.
+                </p>
+              )}
+              {entered !== expected ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setTotalPrice(String(expected))}
+                >
+                  Usar {formatPrice(expected)}
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
 
           <div className="space-y-1.5">
             <Label htmlFor="booking-status">Estado</Label>

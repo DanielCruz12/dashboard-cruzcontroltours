@@ -1,55 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
-import { formatPrice, getColumns } from "./column";
+import { getColumns } from "./column";
 import { useSession } from "@/lib/session";
+import { TourDetailDialog } from "./tour-detail-dialog";
 import { TourFormDialog } from "./tour-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { ViewDialog, ViewField } from "@/components/view-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import { fetchTours, removeTour, resetSave } from "@/lib/store/toursSlice";
 import { fetchCategories } from "@/lib/store/categoriesSlice";
 import { Tour } from "@/services/tour-service";
+import {
+  Departure,
+  listDepartures,
+} from "@/services/departure-service";
 import { toErrorMessage } from "@/lib/api-client";
-
-const tourFields: ViewField[] = [
-  { key: "id", label: "ID" },
-  { key: "title", label: "Título" },
-  { key: "description", label: "Descripción" },
-  {
-    key: "price",
-    label: "Precio",
-    format: (value) => formatPrice(value as string),
-  },
-  { key: "durationDays", label: "Duración (días)" },
-  {
-    key: "active",
-    label: "Estado",
-    format: (value) => (value ? "Activo" : "Inactivo"),
-  },
-  { key: "categoryId", label: "Categoría (ID)" },
-  {
-    key: "images",
-    label: "Imágenes",
-    format: (value) => (value as string[]).join(", ") || "—",
-  },
-  {
-    key: "videos",
-    label: "Videos",
-    format: (value) => (value as string[]).join(", ") || "—",
-  },
-  {
-    key: "reviewCriteria",
-    label: "Criterios",
-    format: (value) => (value as string[]).join(" · ") || "—",
-  },
-  { key: "createdAt", label: "Creado" },
-];
 
 const TourList = () => {
   const dispatch = useAppDispatch();
@@ -63,11 +33,18 @@ const TourList = () => {
     (state) => state.categories.listStatus,
   );
 
+  const [departures, setDepartures] = useState<Departure[]>([]);
   const [selected, setSelected] = useState<Tour | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Tour | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  const fetchDepartures = useCallback(() => {
+    listDepartures()
+      .then(setDepartures)
+      .catch(() => setDepartures([]));
+  }, []);
 
   useEffect(() => {
     if (listStatus === "idle") {
@@ -77,6 +54,10 @@ const TourList = () => {
       dispatch(fetchCategories());
     }
   }, [dispatch, listStatus, categoriesStatus]);
+
+  useEffect(() => {
+    fetchDepartures();
+  }, [fetchDepartures]);
 
   const openCreate = () => {
     dispatch(resetSave());
@@ -137,19 +118,26 @@ const TourList = () => {
       </div>
       <DataTable
         placeholder="Buscar por título..."
-        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
+        columns={getColumns(
+          setSelected,
+          openEdit,
+          handleDelete,
+          canWrite,
+          departures,
+        )}
         filterColumn="title"
         data={items}
       />
-      <ViewDialog
+      <TourDetailDialog
         open={selected !== null}
         onOpenChange={(open) => {
           if (!open) setSelected(null);
         }}
-        title="Detalle del tour"
-        description="Información completa del tour."
-        data={selected}
-        fields={tourFields}
+        tour={selected}
+        categories={categories}
+        departures={departures}
+        canWrite={canWrite}
+        onDeparturesChanged={fetchDepartures}
       />
       <TourFormDialog
         key={`${editing?.id ?? "new"}-${formOpen}`}

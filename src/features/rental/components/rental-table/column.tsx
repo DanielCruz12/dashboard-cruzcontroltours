@@ -71,7 +71,7 @@ export const getColumns = (
     ),
     cell: ({ row }) => (
       <Badge className={STATUS_STYLES[row.original.status]}>
-        {row.original.status}
+        {STATUS_LABELS[row.original.status]}
       </Badge>
     ),
   },

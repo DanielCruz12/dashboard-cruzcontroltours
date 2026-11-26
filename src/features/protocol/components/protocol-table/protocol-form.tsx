@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/ui/rich-text-editor";
-import { shortId } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -99,7 +98,7 @@ export function ProtocolForm({
             )}
             {tours.map((tour) => (
               <SelectItem key={tour.id} value={String(tour.id)}>
-                #{shortId(tour.id)} — {tour.title}
+                {tour.title}
               </SelectItem>
             ))}
           </SelectContent>

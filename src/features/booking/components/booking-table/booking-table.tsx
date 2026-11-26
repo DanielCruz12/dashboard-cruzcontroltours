@@ -3,14 +3,14 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
-import { formatPrice, getColumns } from "./column";
+import { getColumns } from "./column";
+import { BookingDetailDialog } from "./booking-detail-dialog";
 import { BookingSummaryCards } from "./booking-summary-cards";
 import { useSession } from "@/lib/session";
 import { BookingFormDialog } from "./booking-form-dialog";
 import { DataTable } from "@/components/ui/table/data-table";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { ViewDialog, ViewField } from "@/components/view-dialog";
 import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
 import {
   fetchBookings,
@@ -19,22 +19,11 @@ import {
 } from "@/lib/store/bookingsSlice";
 import { fetchTours } from "@/lib/store/toursSlice";
 import { Booking } from "@/services/booking-service";
+import {
+  Departure,
+  listDepartures,
+} from "@/services/departure-service";
 import { toErrorMessage } from "@/lib/api-client";
-
-const bookingFields: ViewField[] = [
-  { key: "id", label: "ID" },
-  { key: "tourId", label: "Tour (ID)" },
-  { key: "departureId", label: "Salida (ID)" },
-  { key: "userId", label: "Usuario" },
-  { key: "guests", label: "Personas" },
-  {
-    key: "totalPrice",
-    label: "Total",
-    format: (value) => formatPrice(value as string),
-  },
-  { key: "status", label: "Estado" },
-  { key: "createdAt", label: "Creada" },
-];
 
 const BookingList = () => {
   const dispatch = useAppDispatch();
@@ -45,6 +34,7 @@ const BookingList = () => {
   const tours = useAppSelector((state) => state.tours.items);
   const toursStatus = useAppSelector((state) => state.tours.listStatus);
 
+  const [departures, setDepartures] = useState<Departure[]>([]);
   const [selected, setSelected] = useState<Booking | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Booking | null>(null);
@@ -59,6 +49,20 @@ const BookingList = () => {
       dispatch(fetchTours());
     }
   }, [dispatch, listStatus, toursStatus]);
+
+  useEffect(() => {
+    let active = true;
+    listDepartures()
+      .then((data) => {
+        if (active) setDepartures(data);
+      })
+      .catch(() => {
+        if (active) setDepartures([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const openCreate = () => {
     dispatch(resetSave());
@@ -111,7 +115,7 @@ const BookingList = () => {
 
   return (
     <>
-      <BookingSummaryCards items={items} />
+      <BookingSummaryCards items={items} tours={tours} departures={departures} />
       <div className="flex justify-end">
         <Button onClick={openCreate}>
           <Plus className="h-4 w-4" /> Crear reserva
@@ -119,19 +123,25 @@ const BookingList = () => {
       </div>
       <DataTable
         placeholder="Buscar por usuario..."
-        columns={getColumns(setSelected, openEdit, handleDelete, canWrite)}
+        columns={getColumns(
+          setSelected,
+          openEdit,
+          handleDelete,
+          canWrite,
+          tours,
+          departures,
+        )}
         filterColumn="userId"
         data={items}
       />
-      <ViewDialog
+      <BookingDetailDialog
         open={selected !== null}
         onOpenChange={(open) => {
           if (!open) setSelected(null);
         }}
-        title="Detalle de la reserva"
-        description="Información completa de la reserva."
-        data={selected}
-        fields={bookingFields}
+        booking={selected}
+        tours={tours}
+        departures={departures}
       />
       <BookingFormDialog
         key={`${editing?.id ?? "new"}-${formOpen}`}
@@ -139,6 +149,7 @@ const BookingList = () => {
         onOpenChange={setFormOpen}
         booking={editing}
         tours={tours}
+        departures={departures}
       />
       <ConfirmDialog
         open={deleteId !== null}

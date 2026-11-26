@@ -10,6 +10,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DataTableColumnHeader } from "@/components/ui/table/data-table-column";
 import { Tour } from "@/services/tour-service";
+import {
+  Departure,
+  formatDepartureDateTime,
+} from "@/services/departure-service";
 import moment from "moment";
 import "moment/locale/es";
 
@@ -26,7 +30,8 @@ export const getColumns = (
   handleView: TourAction,
   handleEdit: TourAction,
   handleDelete: DeleteTourFunction,
-  canWrite = true
+  canWrite = true,
+  departures: Departure[] = []
 ): ColumnDef<Tour>[] => [
   {
     accessorKey: "title",
@@ -57,6 +62,39 @@ export const getColumns = (
         {row.original.durationDays === 1 ? "día" : "días"}
       </span>
     ),
+  },
+  {
+    id: "nextDeparture",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Próxima salida" />
+    ),
+    cell: ({ row }) => {
+      const today = moment().format("YYYY-MM-DD");
+      const upcoming = departures
+        .filter(
+          (item) =>
+            item.tourId === row.original.id &&
+            item.status === "open" &&
+            item.startDate >= today,
+        )
+        .sort((a, b) =>
+          a.startDate !== b.startDate
+            ? a.startDate < b.startDate
+              ? -1
+              : 1
+            : (a.startTime ?? "") < (b.startTime ?? "")
+              ? -1
+              : 1,
+        )[0];
+      if (!upcoming) {
+        return <span className="text-muted-foreground">Sin fechas</span>;
+      }
+      return (
+        <span className="whitespace-nowrap">
+          {formatDepartureDateTime(upcoming)}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "active",
