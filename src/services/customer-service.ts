@@ -5,6 +5,8 @@ export type Customer = {
   id: string;
   nombre: string;
   telefono: string;
+  telefonoSecundario: string | null;
+  fechaNacimiento: string | null;
   correo: string;
   mensaje: string | null;
   createdAt: string;
@@ -13,6 +15,8 @@ export type Customer = {
 export type CustomerInput = {
   nombre: string;
   telefono: string;
+  telefonoSecundario?: string;
+  fechaNacimiento?: string;
   correo: string;
   mensaje?: string;
 };

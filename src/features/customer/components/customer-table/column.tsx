@@ -36,6 +36,31 @@ export const getColumns = (
     ),
   },
   {
+    accessorKey: "telefonoSecundario",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tel. secundario" />
+    ),
+    cell: ({ row }) => <span>{row.original.telefonoSecundario || "—"}</span>,
+  },
+  {
+    accessorKey: "fechaNacimiento",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Nacimiento" />
+    ),
+    cell: ({ row }) => {
+      const value = row.original.fechaNacimiento;
+      if (!value) return <span>—</span>;
+      const parsed = moment(value, "YYYY-MM-DD", true);
+      return (
+        <span className="whitespace-nowrap">
+          {parsed.isValid()
+            ? parsed.locale("es").format("L")
+            : row.original.fechaNacimiento}
+        </span>
+      );
+    },
+  },
+  {
     accessorKey: "correo",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Correo" />

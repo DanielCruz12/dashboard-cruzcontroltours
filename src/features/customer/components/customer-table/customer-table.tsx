@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import moment from "moment";
+import "moment/locale/es";
 import { Plus } from "lucide-react";
 import { getColumns } from "./column";
 import { CustomerFormDialog } from "./customer-form-dialog";
@@ -23,6 +25,18 @@ const customerFields: ViewField[] = [
   { key: "id", label: "ID" },
   { key: "nombre", label: "Nombre" },
   { key: "telefono", label: "Teléfono" },
+  { key: "telefonoSecundario", label: "Teléfono secundario" },
+  {
+    key: "fechaNacimiento",
+    label: "Fecha de nacimiento",
+    format: (value) => {
+      if (!value) return "—";
+      const parsed = moment(value as string, "YYYY-MM-DD", true);
+      return parsed.isValid()
+        ? parsed.locale("es").format("LL")
+        : String(value);
+    },
+  },
   { key: "correo", label: "Correo" },
   { key: "mensaje", label: "Mensaje" },
   { key: "createdAt", label: "Recibido" },

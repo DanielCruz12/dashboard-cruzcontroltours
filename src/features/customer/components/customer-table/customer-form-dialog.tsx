@@ -25,10 +25,31 @@ type CustomerFormDialogProps = {
 type FieldErrors = {
   nombre?: string;
   telefono?: string;
+  telefonoSecundario?: string;
+  fechaNacimiento?: string;
   correo?: string;
 };
 
 const EMAIL_RE = /^\S+@\S+\.\S+$/;
+const FECHA_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function validateFechaNacimiento(value: string): string | null {
+  if (!value) return null;
+  if (!FECHA_RE.test(value)) return "Usa el formato AAAA-MM-DD.";
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  )
+    return "Fecha inválida.";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (date.getTime() > today.getTime())
+    return "La fecha de nacimiento no puede ser futura.";
+  return null;
+}
 
 export function CustomerFormDialog({
   open,
@@ -40,6 +61,8 @@ export function CustomerFormDialog({
 
   const [nombre, setNombre] = useState("");
   const [telefono, setTelefono] = useState("");
+  const [telefonoSecundario, setTelefonoSecundario] = useState("");
+  const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [correo, setCorreo] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -52,6 +75,10 @@ export function CustomerFormDialog({
     const next: FieldErrors = {};
     if (!nombre.trim()) next.nombre = "El nombre es requerido.";
     if (!telefono.trim()) next.telefono = "El teléfono es requerido.";
+    if (telefonoSecundario.trim().length > 50)
+      next.telefonoSecundario = "Máximo 50 caracteres.";
+    const fechaError = validateFechaNacimiento(fechaNacimiento);
+    if (fechaError) next.fechaNacimiento = fechaError;
     if (!correo.trim()) {
       next.correo = "El correo es requerido.";
     } else if (!EMAIL_RE.test(correo.trim())) {
@@ -65,6 +92,8 @@ export function CustomerFormDialog({
         createCustomer({
           nombre: nombre.trim(),
           telefono: telefono.trim(),
+          telefonoSecundario: telefonoSecundario.trim() || undefined,
+          fechaNacimiento: fechaNacimiento || undefined,
           correo: correo.trim(),
           mensaje: mensaje.trim() || undefined,
         }),
@@ -113,6 +142,45 @@ export function CustomerFormDialog({
               />
               {errors.telefono && (
                 <p className="text-xs text-red-600">{errors.telefono}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="customer-telefono-secundario">
+                Teléfono secundario (opcional)
+              </Label>
+              <Input
+                id="customer-telefono-secundario"
+                value={telefonoSecundario}
+                onChange={(event) =>
+                  setTelefonoSecundario(event.target.value)
+                }
+                placeholder="p. ej. +503 7000 0001"
+                className={errors.telefonoSecundario ? "border-red-500" : ""}
+              />
+              {errors.telefonoSecundario && (
+                <p className="text-xs text-red-600">
+                  {errors.telefonoSecundario}
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="customer-fecha-nacimiento">
+                Fecha de nacimiento (opcional)
+              </Label>
+              <Input
+                id="customer-fecha-nacimiento"
+                type="date"
+                value={fechaNacimiento}
+                onChange={(event) => setFechaNacimiento(event.target.value)}
+                className={errors.fechaNacimiento ? "border-red-500" : ""}
+              />
+              {errors.fechaNacimiento && (
+                <p className="text-xs text-red-600">
+                  {errors.fechaNacimiento}
+                </p>
               )}
             </div>
             <div className="space-y-1.5">
